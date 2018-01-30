@@ -15,3 +15,18 @@ bool GLLogCall(const char* function, const char* file, unsigned int line)
 	}
 	return true;
 }
+
+void ResizeWindowCallBack(GLFWwindow* window, int width, int height) {
+	glViewport(0, 0, width, height);
+}
+
+void Renderer::Draw(const VertexArray & va, const IndexBuffer & ib, const Shader & shader) const {
+	shader.Bind();
+	va.Bind();
+	ib.Bind();
+	GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
+}
+
+void Renderer::Clear() {
+	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+}

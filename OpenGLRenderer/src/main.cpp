@@ -1,5 +1,8 @@
 ﻿#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -7,88 +10,16 @@
 
 #include "Renderer.h"
 #include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
-
-struct ShaderProgramSource {
-	std::string VertexSource, FragmentSource;
-};
-
-static ShaderProgramSource ParseShader(const std::string& filepath) {
-
-	std::ifstream stream(filepath);
-
-	enum class ShaderType {
-		NONE = -1, VERTEX = 0, FRAGMENT = 1
-	} type = ShaderType::NONE;
-
-	std::string line;
-
-	std::stringstream ss[2];
-
-	while (getline(stream, line)) {
-
-		if (line.find("#shader") != std::string::npos) {
-
-			if (line.find("vertex") != std::string::npos) {
-				type = ShaderType::VERTEX;
-			}
-			else if (line.find("fragment") != std::string::npos) {
-				type = ShaderType::FRAGMENT;
-			}
-
-		}
-		else {
-			ss[(int)type] << line << '\n';
-		}
-
-	}
-
-	return { ss[0].str(), ss[1].str() };
-}
-
-static unsigned int CompileShader(unsigned int type, const std::string& source) {
-
-	GLCall(unsigned int id = glCreateShader(type));
-	const char* src = source.c_str();
-	GLCall(glShaderSource(id, 1, &src, nullptr));
-	GLCall(glCompileShader(id));
-
-	//Errorcheck
-	int result;
-	GLCall(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
-	if (result == GL_FALSE) {
-		int length;
-		GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
-		char* message = (char*)alloca(length * sizeof(char));
-		GLCall(glGetShaderInfoLog(id, length, &length, message));
-		std::cout << "Error: failed to compile "
-			<< (type == GL_VERTEX_SHADER ? "Vertex" : "Fragment") << " Shader:\n"
-			<< message;
-		
-		GLCall(glDeleteShader(id));
-		return 0;
-	}
-
-	return id;
-
-}
-
-static unsigned int createShader(const std::string& vertexShader, const std::string& fragmentShader) {
-
-	GLCall(unsigned int program = glCreateProgram());
-	unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-	unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-	GLCall(glAttachShader(program, vs));
-	GLCall(glAttachShader(program, fs));
-	GLCall(glLinkProgram(program));
-	GLCall(glValidateProgram(program));
-
-	GLCall(glDeleteShader(vs));
-	GLCall(glDeleteShader(fs));
-
-	return program;
-}
+#include "VertexArray.h"
+#include "Shader.h"
+#include "GameObject.h"
+#include "InputManager.h"
+#include "Camera.h"
+#include "Texture.h"
+#include "ObjLoader.h"
+#include "Clock.h"
 
 int main(void)
 {
@@ -104,7 +35,7 @@ int main(void)
 
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(16 * 8 * 10, 9 * 8 * 10, "Schloss Pinneberg Engine", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -115,7 +46,13 @@ int main(void)
 	// Make the window's context current
 	glfwMakeContextCurrent(window);
 
-	glfwSwapInterval(1);
+	InputManager inputManager(window);
+	inputManager.setCursorVisible(false);
+
+	//glfwSwapInterval(1); now replaced with clock
+
+	glfwSetWindowSizeCallback(window, ResizeWindowCallBack);
+	GLCall(glEnable(GL_DEPTH_TEST));
 
 	// glewInit works after Context creation (1 line above)
 	GLenum err = glewInit();
@@ -132,62 +69,108 @@ int main(void)
 	GLCall(std::cout << glGetString(GL_VERSION) << std::endl);
 
 	{
-		float positions[] = {
-			-0.5f, -0.5f,
-			0.5f, -0.5f,
-			0.5f, 0.5f,
-			-0.5f, 0.5f,
+		float positions[] = {	//x, y, z, r, g, b
+			-0.5f, -0.5f, 0.5f,		1.f, 0.f, 0.f,
+			0.5f, -0.5f, 0.5f,		0.f, 1.f, 0.f,
+			0.5f, 0.5f, 0.f,		0.f, 0.f, 1.f,
+			-0.5f, 0.5f, 0.f,		1.f, 1.f, 0.f,
+			0.5f, -0.5f, -0.5f,		0.f, 1.f, 0.f,
+			-0.5f, -0.5f, -0.5f,	1.f, 0.f, 0.f,
+			-0.5f, -0.5f, 0.f,		1.f, 0.f, 0.f, // lines one and two with z = 0.f
+			0.5f, -0.5f, 0.f,		0.f, 1.f, 0.f,
+		};
+
+		float facePositions[] = { //x, y, z, u, v
+			-0.5f, -0.5f, 0.f,		0.f, 0.f,
+			0.5f, -0.5f, 0.f,		1.f, 0.f,
+			0.5f, 0.5f, 0.f,		1.f, 1.f,
+			-0.5f, 0.5f, 0.f,		0.f, 1.f
 		};
 
 		GLuint indices[] = {
 			0,1,2,
-			2,3,0
+			2,3,0,
+			5,4,2,
+			2,3,5,
+			0,1,4,
+			4,5,0
 		};
 
-		GLuint vao;
-		GLCall(glGenVertexArrays(1, &vao));
-		GLCall(glBindVertexArray(vao));
+		GLuint faceIndices[] = {
+			0, 1, 2,
+			2, 3, 0
+		};
 
-		VertexBuffer vb(&positions, 4 * 2 * sizeof(float));
-		GLCall(glEnableVertexAttribArray(0));
-		GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
 
-		IndexBuffer ib(indices, 6);
+		
+		VertexArray cubeVA;
+		VertexBuffer cubeVB(&positions, 8 * 6 * sizeof(float));
+		VertexBufferLayout cubeLayout;
+		cubeLayout.Push<float>(3);
+		cubeLayout.Push<float>(3);
+		cubeVA.AddBuffer(cubeVB, cubeLayout);
 
-		ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
-		//std::cout << "VertexCode:" << std::endl;
-		//std::cout << source.VertexSource << std::endl;
-		//std::cout << "FragmentCode:" << std::endl;
-		//std::cout << source.FragmentSource << std::endl;
+		VertexArray faceVA;
+		VertexBuffer faceVB(&facePositions, 8 * 5 * sizeof(float));
+		VertexBufferLayout faceLayout;
+		faceLayout.Push<float>(3);
+		faceLayout.Push<float>(2);
+		faceVA.AddBuffer(faceVB, faceLayout);
 
-		unsigned int shader = createShader(source.VertexSource, source.FragmentSource);
-		GLCall(glUseProgram(shader));
+		IndexBuffer cubeIB(indices, 18);
+		IndexBuffer faceIB(faceIndices, 6);
 
-		GLCall(glUseProgram(0));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
-		GLCall(glBindVertexArray(0));
+		ObjLoader objLoader;
+		ObjFile object = objLoader.loadObj("res/models/var1_triangulated.obj");
+
+		Shader BasicShader("res/shaders/Basic.shader");
+		Shader RandomShader("res/shaders/Random.shader");
+		Shader cubeShader("res/shaders/vertexColor.shader");
+		Shader faceShader("res/shaders/textured.shader");
+
+		Texture grid;
+		grid.loadFromFile("res/textures/cGrid.png");
 
 		//Uniform data preparation
-		float r = 0.5f, g = 0.f, b = 0.f;
-		float change = 0.05f;
+		glm::mat4 cubeModel, faceModel, view, projection, vp;
+		int wwidth, wheight;
+
+		faceModel = glm::translate(glm::mat4(), glm::vec3(2.f, 0.f, 0.f));
+
+
+		Camera cam(glm::vec3(0, 0, 2), glm::vec3(0, 1, 0));
+
+		Renderer renderer;
+
+		Clock deltaClock;
+		float deltaTime = 0.f;
 
 		// Window Loop
 		while (!glfwWindowShouldClose(window)) {
+
+			deltaTime = deltaClock.reset();
 			/* Render here */
-			GLCall(glClear(GL_COLOR_BUFFER_BIT));
+			renderer.Clear();
 
-			glUseProgram(shader);
+			view = cam.GetViewMatrix();
+			cam.MouseRotate(inputManager.getMouseOffset().x * 0.12f, inputManager.getMouseOffset().y * 0.12f);
+			
+			glfwGetWindowSize(window, &wwidth, &wheight);
+			projection = glm::perspective(glm::radians(80.f), (float)wwidth / (float)wheight, 0.1f, 1000.f);
+			vp = projection * view;
 
-			GLCall(int location = glGetUniformLocation(shader, "u_Color"));
-			ASSERT(location != -1);
-			GLCall(glUniform4f(location, r, g, b, 1.0f));
+			cubeShader.Bind();
+			cubeShader.setUniformMat4f("u_VP", vp, false);
+			cubeShader.setUniformMat4f("u_Model", cubeModel, false);
+			renderer.Draw(cubeVA, cubeIB, cubeShader);
 
-			glBindVertexArray(vao);
-			ib.Bind();
-
-			GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
-
+			grid.Bind(0);
+			faceShader.Bind();
+			faceShader.setUniform1i("u_Tex", 0); //grid is in unit 0
+			faceShader.setUniformMat4f("u_VP", vp, false);
+			faceShader.setUniformMat4f("u_Model", faceModel, false);
+			renderer.Draw(faceVA, faceIB, faceShader);
+			grid.Unbind();
 
 			/* Swap front and back buffers */
 			glfwSwapBuffers(window);
@@ -195,19 +178,24 @@ int main(void)
 			/* Poll for and process events */
 			glfwPollEvents();
 
-			if (r >= 1.0f)
-				change = -0.05f;
-			else if (r <= 0.f)
-				change = 0.05f;
+			if (inputManager.KeyDown(GLFW_KEY_ESCAPE)) {
+				goto deleteWindow;
+			}
 
-			r += change;
+			if (inputManager.KeyDown(GLFW_KEY_W))
+				cam.Translate(Camera_Movement::FORWARD, deltaTime);
+			if (inputManager.KeyDown(GLFW_KEY_S))
+				cam.Translate(Camera_Movement::BACKWARD, deltaTime);
+			if (inputManager.KeyDown(GLFW_KEY_A))
+				cam.Translate(Camera_Movement::LEFT, deltaTime);
+			if (inputManager.KeyDown(GLFW_KEY_D))
+				cam.Translate(Camera_Movement::RIGHT, deltaTime);
 
 		}
 
-		GLCall(glDeleteProgram(shader));
-
 	}
 
+	deleteWindow:
 	glfwTerminate();
 	return 0;
 }

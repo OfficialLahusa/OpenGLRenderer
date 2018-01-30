@@ -17,6 +17,8 @@
     <None Include="res\shaders\Random.shader">
       <Filter>Ressourcendateien</Filter>
     </None>
+    <None Include="res\shaders\vertexColor.shader" />
+    <None Include="res\shaders\textured.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -31,10 +33,48 @@
     <ClCompile Include="src\IndexBuffer.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="src\VertexArray.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputManager.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ObjLoader.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Clock.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VertexBuffer.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\IndexBuffer.h" />
+    <ClInclude Include="src\VertexArray.h" />
+    <ClInclude Include="src\VertexBufferLayout.h" />
+    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\GameObject.h" />
+    <ClInclude Include="src\InputManager.h" />
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\ObjLoader.h" />
+    <ClInclude Include="src\Clock.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\textures\cGrid.png">
+      <Filter>Ressourcendateien</Filter>
+    </Image>
+    <Image Include="res\textures\brick.jpg">
+      <Filter>Ressourcendateien</Filter>
+    </Image>
   </ItemGroup>
 </Project>
