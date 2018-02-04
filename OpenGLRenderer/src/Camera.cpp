@@ -15,6 +15,10 @@ void Camera::Translate(Camera_Movement direction, float deltaTime) {
 		Position -= Right * velocity;
 	if (direction == RIGHT)
 		Position += Right * velocity;
+	if (direction == DOWN)
+		Position -= Up * velocity;
+	if (direction == UP)
+		Position += Up * velocity;
 }
 
 void Camera::MouseRotate(float xoff, float yoff, GLboolean constrainPitch) {

@@ -24,6 +24,8 @@ public:
 
 	//Uniform management;
 	void setUniform4f(const std::string& name, glm::vec4 v);
+	void setUniform3f(const std::string& name, glm::vec3 v);
 	void setUniformMat4f(const std::string & name, glm::mat4 v, bool transpose);
 	void setUniform1i(const std::string& name, int v);
+	void setUniform1f(const std::string& name, float v);
 };

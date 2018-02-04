@@ -5,15 +5,21 @@
 
 #include "VertexArray.h"
 #include "IndexBuffer.h"
+#include "VertexBufferLayout.h"
+
+typedef std::pair<std::vector<float>, std::vector<unsigned int>> fMeshData;
 
 class ObjFile {
 private:
 
 public:
-	ObjFile() {};
-	~ObjFile() {};
+	ObjFile(fMeshData);
+	ObjFile();
+	~ObjFile();
 
 	VertexArray m_va;
+	VertexBuffer m_vb;
+	VertexBufferLayout m_vbl;
 	IndexBuffer m_ib;
 
 };
@@ -28,6 +34,6 @@ private:
 
 public:
 	void clearMemory();
-	ObjFile loadObj(const std::string& filepath);
+	void loadObj(fMeshData& outData, const std::string& filepath);
 
 };

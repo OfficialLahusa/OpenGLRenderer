@@ -19,6 +19,7 @@
     </None>
     <None Include="res\shaders\vertexColor.shader" />
     <None Include="res\shaders\textured.shader" />
+    <None Include="res\shaders\phong.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">

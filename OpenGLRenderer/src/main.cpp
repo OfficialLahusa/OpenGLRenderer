@@ -80,13 +80,6 @@ int main(void)
 			0.5f, -0.5f, 0.f,		0.f, 1.f, 0.f,
 		};
 
-		float facePositions[] = { //x, y, z, u, v
-			-0.5f, -0.5f, 0.f,		0.f, 0.f,
-			0.5f, -0.5f, 0.f,		1.f, 0.f,
-			0.5f, 0.5f, 0.f,		1.f, 1.f,
-			-0.5f, 0.5f, 0.f,		0.f, 1.f
-		};
-
 		GLuint indices[] = {
 			0,1,2,
 			2,3,0,
@@ -96,10 +89,6 @@ int main(void)
 			4,5,0
 		};
 
-		GLuint faceIndices[] = {
-			0, 1, 2,
-			2, 3, 0
-		};
 
 
 		
@@ -110,32 +99,35 @@ int main(void)
 		cubeLayout.Push<float>(3);
 		cubeVA.AddBuffer(cubeVB, cubeLayout);
 
-		VertexArray faceVA;
-		VertexBuffer faceVB(&facePositions, 8 * 5 * sizeof(float));
-		VertexBufferLayout faceLayout;
-		faceLayout.Push<float>(3);
-		faceLayout.Push<float>(2);
-		faceVA.AddBuffer(faceVB, faceLayout);
-
 		IndexBuffer cubeIB(indices, 18);
-		IndexBuffer faceIB(faceIndices, 6);
 
 		ObjLoader objLoader;
-		ObjFile object = objLoader.loadObj("res/models/var1_triangulated.obj");
+		fMeshData objectData, potData;
+
+		objLoader.loadObj(objectData, "res/models/var1_triangulated.obj");
+		objLoader.loadObj(potData, "res/models/pot.obj");
+
+		ObjFile object(objectData), pot(potData);
 
 		Shader BasicShader("res/shaders/Basic.shader");
 		Shader RandomShader("res/shaders/Random.shader");
 		Shader cubeShader("res/shaders/vertexColor.shader");
 		Shader faceShader("res/shaders/textured.shader");
+		Shader phong("res/shaders/phong.shader");	//some things derived from: https://www.tomdalling.com/blog/modern-opengl/07-more-lighting-ambient-specular-attenuation-gamma/
 
 		Texture grid;
 		grid.loadFromFile("res/textures/cGrid.png");
+		Texture white;
+		white.loadFromFile("res/textures/white.png");
+		Texture dhlPaket;
+		dhlPaket.loadFromFile("res/textures/variation_2.png");
 
 		//Uniform data preparation
-		glm::mat4 cubeModel, faceModel, view, projection, vp;
+		glm::mat4 cubeModel, boxModel, view, projection, vp;
 		int wwidth, wheight;
 
-		faceModel = glm::translate(glm::mat4(), glm::vec3(2.f, 0.f, 0.f));
+		boxModel = glm::translate(glm::mat4(), glm::vec3(2.f, 0.f, -1.f));
+		boxModel = glm::scale(boxModel, glm::vec3(0.2f, 0.2f, 0.2f));
 
 
 		Camera cam(glm::vec3(0, 0, 2), glm::vec3(0, 1, 0));
@@ -145,8 +137,30 @@ int main(void)
 		Clock deltaClock;
 		float deltaTime = 0.f;
 
+		glm::vec3 lightPos = {
+			1.f, 0.f, 0.f
+		};
+		float add = 0.3f;
+
+		phong.Bind();
+		phong.setUniform1f("u_AmbientIntensity", 0.3f);
+		phong.setUniform1f("u_DiffuseIntensity", 0.8f);
+		phong.setUniform1f("u_SpecularIntensity", 0.5f);
+		phong.setUniform3f("u_SpecularColor", { 1.f, 0.f, 0.2f });
+
 		// Window Loop
 		while (!glfwWindowShouldClose(window)) {
+
+			
+			lightPos.x += add * deltaTime;
+			if (lightPos.x >= 4.f) {
+				add = -1.f;
+			}
+			else if (lightPos.x <= 0.f) {
+				add = 1.f;
+			}
+			phong.setUniform3f("u_LightPos", lightPos);
+			phong.setUniform3f("u_CamPos", cam.Position);
 
 			deltaTime = deltaClock.reset();
 			/* Render here */
@@ -164,13 +178,21 @@ int main(void)
 			cubeShader.setUniformMat4f("u_Model", cubeModel, false);
 			renderer.Draw(cubeVA, cubeIB, cubeShader);
 
-			grid.Bind(0);
-			faceShader.Bind();
-			faceShader.setUniform1i("u_Tex", 0); //grid is in unit 0
-			faceShader.setUniformMat4f("u_VP", vp, false);
-			faceShader.setUniformMat4f("u_Model", faceModel, false);
-			renderer.Draw(faceVA, faceIB, faceShader);
-			grid.Unbind();
+			dhlPaket.Bind(0);
+			phong.Bind();
+			phong.setUniform1i("u_Tex", 0); //dhlPaket is in unit 0
+			phong.setUniformMat4f("u_VP", vp, false);
+			phong.setUniformMat4f("u_Model", boxModel, false);
+			renderer.Draw(object.m_va, object.m_ib, phong);
+			dhlPaket.Unbind();
+
+			/*white.Bind(0);
+			phong.Bind();
+			phong.setUniform1i("u_Tex", 0); //dhlPaket is in unit 0
+			phong.setUniformMat4f("u_VP", vp, false);
+			phong.setUniformMat4f("u_Model", boxModel, false);
+			renderer.Draw(pot.m_va, pot.m_ib, phong);
+			white.Unbind();*/
 
 			/* Swap front and back buffers */
 			glfwSwapBuffers(window);

@@ -1,6 +1,7 @@
 #include "IndexBuffer.h"
 #include "Renderer.h"
 
+
 IndexBuffer::IndexBuffer(const unsigned int* data, unsigned int count)
 	: m_Count(count)
 {
@@ -16,7 +17,8 @@ IndexBuffer::IndexBuffer() {
 }
 
 IndexBuffer::~IndexBuffer() {
-	GLCall(glDeleteBuffers(1, &m_RendererId));
+	if (m_freeMemory)
+		GLCall(glDeleteBuffers(1, &m_RendererId));
 }
 
 void IndexBuffer::Bind() const {

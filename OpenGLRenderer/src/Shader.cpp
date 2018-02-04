@@ -114,10 +114,18 @@ void Shader::setUniform4f(const std::string & name, glm::vec4 v) {
 	GLCall(glUniform4f(getUniformLocation(name), v[0], v[1], v[2], v[3]));
 }
 
+void Shader::setUniform3f(const std::string & name, glm::vec3 v) {
+	GLCall(glUniform3f(getUniformLocation(name), v[0], v[1], v[2]));
+}
+
 void Shader::setUniformMat4f(const std::string & name, glm::mat4 v, bool transpose) {
 	GLCall(glUniformMatrix4fv(getUniformLocation(name), 1, (transpose ? GL_TRUE : GL_FALSE), &v[0][0]));
 }
 
 void Shader::setUniform1i(const std::string & name, int v) {
 	GLCall(glUniform1i(getUniformLocation(name), v));
+}
+
+void Shader::setUniform1f(const std::string & name, float v) {
+	GLCall(glUniform1f(getUniformLocation(name), v));
 }
