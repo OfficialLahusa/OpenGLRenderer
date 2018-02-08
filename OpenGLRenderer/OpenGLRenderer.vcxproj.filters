@@ -19,6 +19,7 @@
     </None>
     <None Include="res\shaders\vertexColor.shader" />
     <None Include="res\shaders\textured.shader" />
+    <None Include="res\shaders\phong_old.shader" />
     <None Include="res\shaders\phong.shader" />
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +56,9 @@
     <ClCompile Include="src\Clock.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="src\Light.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VertexBuffer.h" />
@@ -69,6 +73,7 @@
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\ObjLoader.h" />
     <ClInclude Include="src\Clock.h" />
+    <ClInclude Include="src\Light.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\cGrid.png">

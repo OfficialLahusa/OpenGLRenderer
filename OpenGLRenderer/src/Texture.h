@@ -17,6 +17,7 @@ private:
 public:
 
 	Texture();
+	Texture(const std::string& filepath);
 	~Texture();
 
 	void logInfo();

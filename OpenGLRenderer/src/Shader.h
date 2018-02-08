@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <glm/glm.hpp>
+#include <unordered_map>
 
 struct ShaderProgramSource {
 	std::string VertexSource, FragmentSource;
@@ -10,6 +11,8 @@ class Shader {
 private:
 	unsigned int m_RendererId;
 	std::string m_FilePath;
+	std::unordered_map<std::string, unsigned int> m_locations;
+
 	int getUniformLocation(const std::string& name);
 	unsigned int CompileShader(unsigned int type, const std::string& source);
 	ShaderProgramSource ParseShader(const std::string & filepath);

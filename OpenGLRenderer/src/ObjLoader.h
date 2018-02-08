@@ -14,6 +14,7 @@ private:
 
 public:
 	ObjFile(fMeshData);
+	ObjFile(const std::string& filepath);
 	ObjFile();
 	~ObjFile();
 

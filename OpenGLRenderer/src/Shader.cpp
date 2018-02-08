@@ -5,10 +5,22 @@
 #include <iostream>
 
 int Shader::getUniformLocation(const std::string & name) {
-	GLCall(unsigned int location = glGetUniformLocation(m_RendererId, name.c_str()));
-	if (location == -1) {
-		std::cout << "Warning: Uniform " << name << " does not exist.\n";
+
+	unsigned int location;
+	std::unordered_map<std::string, unsigned int>::const_iterator it = m_locations.find(name);
+
+	if (it == m_locations.end()) {
+		GLCall(location = glGetUniformLocation(m_RendererId, name.c_str()));
+		if (location == -1) {
+			std::cout << "Warning: Uniform " << name << " does not exist.\n";
+		}
+
+		m_locations.insert(std::pair<std::string, unsigned int>(name, location));
 	}
+	else {
+		location = m_locations[name];
+	}
+
 	
 	return location;
 }

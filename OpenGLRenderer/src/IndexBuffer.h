@@ -12,6 +12,8 @@ public:
 	IndexBuffer();
 	~IndexBuffer();
 
+	void load(const unsigned int* data, unsigned int count);
+
 	void Bind() const;
 	void Unbind() const;
 

@@ -20,6 +20,7 @@
 #include "Texture.h"
 #include "ObjLoader.h"
 #include "Clock.h"
+#include "Light.h"
 
 int main(void)
 {
@@ -69,68 +70,44 @@ int main(void)
 	GLCall(std::cout << glGetString(GL_VERSION) << std::endl);
 
 	{
-		float positions[] = {	//x, y, z, r, g, b
-			-0.5f, -0.5f, 0.5f,		1.f, 0.f, 0.f,
-			0.5f, -0.5f, 0.5f,		0.f, 1.f, 0.f,
-			0.5f, 0.5f, 0.f,		0.f, 0.f, 1.f,
-			-0.5f, 0.5f, 0.f,		1.f, 1.f, 0.f,
-			0.5f, -0.5f, -0.5f,		0.f, 1.f, 0.f,
-			-0.5f, -0.5f, -0.5f,	1.f, 0.f, 0.f,
-			-0.5f, -0.5f, 0.f,		1.f, 0.f, 0.f, // lines one and two with z = 0.f
-			0.5f, -0.5f, 0.f,		0.f, 1.f, 0.f,
-		};
-
-		GLuint indices[] = {
-			0,1,2,
-			2,3,0,
-			5,4,2,
-			2,3,5,
-			0,1,4,
-			4,5,0
-		};
-
-
-
-		
-		VertexArray cubeVA;
-		VertexBuffer cubeVB(&positions, 8 * 6 * sizeof(float));
-		VertexBufferLayout cubeLayout;
-		cubeLayout.Push<float>(3);
-		cubeLayout.Push<float>(3);
-		cubeVA.AddBuffer(cubeVB, cubeLayout);
-
-		IndexBuffer cubeIB(indices, 18);
-
 		ObjLoader objLoader;
-		fMeshData objectData, potData;
+		fMeshData objectData, potData, waterData;
 
 		objLoader.loadObj(objectData, "res/models/var1_triangulated.obj");
 		objLoader.loadObj(potData, "res/models/pot.obj");
+		objLoader.loadObj(waterData, "res/Scenes/Landscapes/test_1/water.obj");
 
-		ObjFile object(objectData), pot(potData);
+		ObjFile object(objectData);
+		ObjFile	pot(potData);
+		ObjFile	landscape("res/Scenes/Landscapes/test_1/landscape.obj");
+		ObjFile	water(waterData);
 
-		Shader BasicShader("res/shaders/Basic.shader");
-		Shader RandomShader("res/shaders/Random.shader");
-		Shader cubeShader("res/shaders/vertexColor.shader");
-		Shader faceShader("res/shaders/textured.shader");
-		Shader phong("res/shaders/phong.shader");	//some things derived from: https://www.tomdalling.com/blog/modern-opengl/07-more-lighting-ambient-specular-attenuation-gamma/
+		Shader texturedShader("res/shaders/textured.shader");
+		Shader oldPhong("res/shaders/phong_old.shader");	//some things derived from: https://www.tomdalling.com/blog/modern-opengl/07-more-lighting-ambient-specular-attenuation-gamma/
+		Shader phong("res/shaders/phong.shader");
 
-		Texture grid;
-		grid.loadFromFile("res/textures/cGrid.png");
-		Texture white;
-		white.loadFromFile("res/textures/white.png");
-		Texture dhlPaket;
-		dhlPaket.loadFromFile("res/textures/variation_2.png");
+		Texture grid("res/textures/cGrid.png");
+		Texture white("res/textures/white.png");
+		Texture dhlPaket("res/textures/variation_2.png");
+		Texture landscapeTex("res/Scenes/Landscapes/test_1/landscape_painted.png");
+		Texture waterTex("res/Scenes/Landscapes/test_1/waterTex.png");
+		
 
 		//Uniform data preparation
-		glm::mat4 cubeModel, boxModel, view, projection, vp;
+		glm::mat4 waterModel, landscapeModel, boxModel, view, projection;
 		int wwidth, wheight;
 
-		boxModel = glm::translate(glm::mat4(), glm::vec3(2.f, 0.f, -1.f));
+		boxModel = glm::translate(glm::mat4(), glm::vec3(0.f, 0.f, 0.f));
 		boxModel = glm::scale(boxModel, glm::vec3(0.2f, 0.2f, 0.2f));
 
+		waterModel = glm::translate(glm::mat4(), glm::vec3(0.f, -2.f, 0.f));
+		waterModel = glm::scale(waterModel, glm::vec3(0.1f, 0.1f, 0.1f));
 
-		Camera cam(glm::vec3(0, 0, 2), glm::vec3(0, 1, 0));
+		landscapeModel = glm::translate(glm::mat4(), glm::vec3(0.f, -2.f, 0.f));
+		landscapeModel = glm::scale(landscapeModel, glm::vec3(0.1f, 0.1f, 0.1f));
+
+
+		Camera cam(glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
 
 		Renderer renderer;
 
@@ -138,29 +115,30 @@ int main(void)
 		float deltaTime = 0.f;
 
 		glm::vec3 lightPos = {
-			1.f, 0.f, 0.f
+			0.f, -1.f, 0.f
 		};
 		float add = 0.3f;
 
-		phong.Bind();
-		phong.setUniform1f("u_AmbientIntensity", 0.3f);
-		phong.setUniform1f("u_DiffuseIntensity", 0.8f);
-		phong.setUniform1f("u_SpecularIntensity", 0.5f);
-		phong.setUniform3f("u_SpecularColor", { 1.f, 0.f, 0.2f });
+		oldPhong.Bind();
+		oldPhong.setUniform1f("u_AmbientIntensity", 0.2f);
+		oldPhong.setUniform1f("u_DiffuseIntensity", 0.8f);
+		oldPhong.setUniform1f("u_SpecularIntensity", 0.5f);
+		oldPhong.setUniform3f("u_SpecularColor", { 1.f, 1.f, 1.f });
 
 		// Window Loop
 		while (!glfwWindowShouldClose(window)) {
 
-			
-			lightPos.x += add * deltaTime;
-			if (lightPos.x >= 4.f) {
+			glClearColor(0.f, 0.f, 0.1f, 1.f);
+			if (lightPos.x >= 3.f) {
 				add = -1.f;
 			}
-			else if (lightPos.x <= 0.f) {
+			else if (lightPos.x <= -3.f) {
 				add = 1.f;
 			}
-			phong.setUniform3f("u_LightPos", lightPos);
-			phong.setUniform3f("u_CamPos", cam.Position);
+			lightPos.x += add * deltaTime;
+			lightPos.z += add * deltaTime;
+			oldPhong.setUniform3f("u_LightPos", lightPos);
+			oldPhong.setUniform3f("u_CamPos", cam.Position);
 
 			deltaTime = deltaClock.reset();
 			/* Render here */
@@ -171,28 +149,42 @@ int main(void)
 			
 			glfwGetWindowSize(window, &wwidth, &wheight);
 			projection = glm::perspective(glm::radians(80.f), (float)wwidth / (float)wheight, 0.1f, 1000.f);
-			vp = projection * view;
 
-			cubeShader.Bind();
-			cubeShader.setUniformMat4f("u_VP", vp, false);
-			cubeShader.setUniformMat4f("u_Model", cubeModel, false);
-			renderer.Draw(cubeVA, cubeIB, cubeShader);
-
+			boxModel = glm::translate(glm::mat4(), lightPos);
+			boxModel = glm::scale(boxModel, glm::vec3(0.2f, 0.2f, 0.2f));
 			dhlPaket.Bind(0);
 			phong.Bind();
 			phong.setUniform1i("u_Tex", 0); //dhlPaket is in unit 0
-			phong.setUniformMat4f("u_VP", vp, false);
-			phong.setUniformMat4f("u_Model", boxModel, false);
+			phong.setUniformMat4f("u_ViewMatrix", view, false);
+			phong.setUniformMat4f("u_ProjectionMatrix", projection, false);
+			phong.setUniformMat4f("u_ModelMatrix", boxModel, false);
 			renderer.Draw(object.m_va, object.m_ib, phong);
 			dhlPaket.Unbind();
+		
+			waterTex.Bind(0);
+			oldPhong.Bind();
+			oldPhong.setUniform1i("u_Tex", 0); //waterTex is in unit 0
+			oldPhong.setUniformMat4f("u_ViewMatrix", view, false);
+			oldPhong.setUniformMat4f("u_ProjectionMatrix", projection, false);
+			oldPhong.setUniformMat4f("u_ModelMatrix", waterModel, false);
+			renderer.Draw(water.m_va, water.m_ib, oldPhong);
+			waterTex.Unbind();
 
-			/*white.Bind(0);
-			phong.Bind();
-			phong.setUniform1i("u_Tex", 0); //dhlPaket is in unit 0
-			phong.setUniformMat4f("u_VP", vp, false);
-			phong.setUniformMat4f("u_Model", boxModel, false);
-			renderer.Draw(pot.m_va, pot.m_ib, phong);
-			white.Unbind();*/
+			
+			landscapeTex.Bind(0);
+			oldPhong.setUniform1i("u_Tex", 0); //landscapeTex is in unit 0
+			oldPhong.setUniformMat4f("u_ViewMatrix", view, false);
+			oldPhong.setUniformMat4f("u_ProjectionMatrix", projection, false);
+			oldPhong.setUniformMat4f("u_ModelMatrix", landscapeModel, false);
+			renderer.Draw(landscape.m_va, landscape.m_ib, oldPhong);
+			landscapeTex.Unbind();
+
+			/*
+			 *Continue here (at 1:48 min)
+			 *https://www.youtube.com/watch?v=bcxX0R8nnDs&index=11&list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP
+			 /
+
+
 
 			/* Swap front and back buffers */
 			glfwSwapBuffers(window);

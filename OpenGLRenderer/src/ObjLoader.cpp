@@ -168,6 +168,20 @@ ObjFile::ObjFile(fMeshData data)
 	m_va.AddBuffer(m_vb, m_vbl);
 }
 
+ObjFile::ObjFile(const std::string & filepath) {
+	fMeshData data;
+	ObjLoader ld;
+	ld.loadObj(data, filepath);
+	m_vb.load(&data.first[0], data.first.size() * sizeof(float));
+	m_ib.load(&data.second[0], data.second.size());
+	m_vbl.Push<float>(3);
+	m_vbl.Push<float>(3);
+	m_vbl.Push<float>(2);
+	m_va.AddBuffer(m_vb, m_vbl);
+}
+
+
+
 ObjFile::ObjFile() {
 
 }

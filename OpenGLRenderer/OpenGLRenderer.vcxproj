@@ -23,6 +23,7 @@
     <ClCompile Include="src\Clock.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\InputManager.cpp" />
+    <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\ObjLoader.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -34,6 +35,7 @@
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
     <None Include="res\shaders\phong.shader" />
+    <None Include="res\shaders\phong_old.shader" />
     <None Include="res\shaders\Random.shader" />
     <None Include="res\shaders\textured.shader" />
     <None Include="res\shaders\vertexColor.shader" />
@@ -44,6 +46,7 @@
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\InputManager.h" />
+    <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\ObjLoader.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Renderer.h" />
@@ -110,12 +113,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <EnableCppCoreCheck>true</EnableCppCoreCheck>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <EnableCppCoreCheck>true</EnableCppCoreCheck>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

@@ -18,6 +18,20 @@ Texture::Texture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
+Texture::Texture(const std::string& filepath)
+	: m_layerCount(0)
+	, m_Size({ 0, 0 }) {
+	stbi_set_flip_vertically_on_load(true);
+	GLCall(glGenTextures(1, &m_RendererId));
+	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererId));
+	setFilteringMin(FilterType::NEAREST_MIPMAP);
+	setFilteringMag(FilterType::LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	loadFromFile(filepath);
+}
+
 Texture::~Texture() {
 	GLCall(glDeleteTextures(1, &m_RendererId));
 }
@@ -87,6 +101,7 @@ void Texture::loadFromData(unsigned char * data, int& width, int& height) {
 }
 
 void Texture::loadFromFile(const std::string& filepath) {
+	Bind(0);
 
 	int x, y, layers;
 	unsigned char* data = stbi_load(filepath.c_str(), &x, &y, &layers, STBI_rgb);
@@ -100,6 +115,7 @@ void Texture::loadFromFile(const std::string& filepath) {
 		std::cout << "Failed to load texture" << std::endl;
 	}
 	stbi_image_free(data);
+	Unbind();
 }
 
 
