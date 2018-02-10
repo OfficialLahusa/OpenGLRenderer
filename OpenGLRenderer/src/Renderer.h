@@ -3,9 +3,14 @@
 #include <GL/glew.h>
 #include <GLFW\glfw3.h>
 
+#include <glm/glm.hpp>
+
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Shader.h"
+#include "ObjLoader.h"
+#include "Material.h"
+
 
 #define ASSERT(x) if(!(x)) __debugbreak();
 
@@ -27,5 +32,7 @@ private:
 
 public:
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
+	void DrawObj(ObjFile& obj, Material& mat);
 	void Clear();
+	glm::ivec2 getWindowSize(GLFWwindow* window);
 };

@@ -5,6 +5,10 @@ glm::mat4 Camera::GetViewMatrix() {
 	return glm::lookAt(Position, Position + Front, Up);
 }
 
+glm::mat4 Camera::GetProjectionMatrix() {
+	return glm::perspective(glm::radians(fov), aspectRatio, near, far);
+}
+
 void Camera::Translate(Camera_Movement direction, float deltaTime) {
 	float velocity = pMovementSpeed * deltaTime;
 	if (direction == FORWARD)

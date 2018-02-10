@@ -1,7 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "Renderer.h"
+//#include "Renderer.h"
+#include <GL/glew.h>
+#include <GLFW\glfw3.h>
 
 struct VertexBufferElement {
 	unsigned int type, count;
@@ -16,7 +18,7 @@ struct VertexBufferElement {
 			case GL_UNSIGNED_BYTE:
 				return 1;
 		}
-		ASSERT(false);
+		//ASSERT(false);
 		return 0;
 	}
 };

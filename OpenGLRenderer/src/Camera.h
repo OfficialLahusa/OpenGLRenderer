@@ -35,6 +35,11 @@ public:
 	glm::vec3 Right;
 	glm::vec3 WorldUp;
 
+	float fov;
+	float aspectRatio;
+	float near;
+	float far;
+
 	
 
 	float Yaw;
@@ -71,6 +76,7 @@ public:
 
 
 	glm::mat4 GetViewMatrix();
+	glm::mat4 GetProjectionMatrix();
 
 	void Translate(Camera_Movement direction, float deltaTime);
 	void MouseRotate(float xoffset, float yoffset, GLboolean constrainPitch = true);

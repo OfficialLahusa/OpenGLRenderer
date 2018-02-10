@@ -25,6 +25,7 @@
     <ClCompile Include="src\InputManager.cpp" />
     <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\ObjLoader.cpp" />
+    <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
@@ -48,6 +49,7 @@
     <ClInclude Include="src\InputManager.h" />
     <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\ObjLoader.h" />
+    <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\Texture.h" />

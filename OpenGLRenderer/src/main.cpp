@@ -81,6 +81,8 @@ int main(void)
 		ObjFile	pot(potData);
 		ObjFile	landscape("res/Scenes/Landscapes/test_1/landscape.obj");
 		ObjFile	water(waterData);
+		ObjFile floor("res/Themes/FancyDungeon/preview/floor.obj");
+		ObjFile walls("res/Themes/FancyDungeon/preview/walls.obj");
 
 		Shader texturedShader("res/shaders/textured.shader");
 		Shader oldPhong("res/shaders/phong_old.shader");	//some things derived from: https://www.tomdalling.com/blog/modern-opengl/07-more-lighting-ambient-specular-attenuation-gamma/
@@ -91,10 +93,12 @@ int main(void)
 		Texture dhlPaket("res/textures/variation_2.png");
 		Texture landscapeTex("res/Scenes/Landscapes/test_1/landscape_painted.png");
 		Texture waterTex("res/Scenes/Landscapes/test_1/waterTex.png");
+		Texture floorTex("res/Themes/FancyDungeon/DefaultRooms/FloorTile/1_tex.png");
+		Texture wallTex("res/Themes/FancyDungeon/DefaultRooms/WallTile/1_tex.png");
 		
 
 		//Uniform data preparation
-		glm::mat4 waterModel, landscapeModel, boxModel, view, projection;
+		glm::mat4 dungeonModel, waterModel, landscapeModel, boxModel, view, projection;
 		int wwidth, wheight;
 
 		boxModel = glm::translate(glm::mat4(), glm::vec3(0.f, 0.f, 0.f));
@@ -106,18 +110,27 @@ int main(void)
 		landscapeModel = glm::translate(glm::mat4(), glm::vec3(0.f, -2.f, 0.f));
 		landscapeModel = glm::scale(landscapeModel, glm::vec3(0.1f, 0.1f, 0.1f));
 
-
-		Camera cam(glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
+		dungeonModel = glm::translate(glm::mat4(), glm::vec3(0.f, -1.f, 0.f));
 
 		Renderer renderer;
 
+		Camera cam(glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
+		cam.fov = 80.f;
+		cam.aspectRatio = (float)renderer.getWindowSize(window).x / (float)renderer.getWindowSize(window).y;
+		cam.near = 0.1f;
+		cam.far = 1000.f;
+
 		Clock deltaClock;
+		Clock runtimeClock;
 		float deltaTime = 0.f;
 
-		glm::vec3 lightPos = {
-			0.f, -1.f, 0.f
-		};
-		float add = 0.3f;
+		PointLight light({ 0.f, -1.f, 0.f }, { 1.f, 1.f, 1.f });
+		float lightMove = 1.f;
+
+		OldPhongMaterial phongMat(light, cam);
+		phongMat.Bind();
+		phongMat.loadTexture("res/Themes/FancyDungeon/DefaultRooms/WallTile/1_tex.png");
+		phongMat.loadModel(dungeonModel);
 
 		oldPhong.Bind();
 		oldPhong.setUniform1f("u_AmbientIntensity", 0.2f);
@@ -127,31 +140,29 @@ int main(void)
 
 		// Window Loop
 		while (!glfwWindowShouldClose(window)) {
+			deltaTime = deltaClock.reset();
 
 			glClearColor(0.f, 0.f, 0.1f, 1.f);
-			if (lightPos.x >= 3.f) {
-				add = -1.f;
-			}
-			else if (lightPos.x <= -3.f) {
-				add = 1.f;
-			}
-			lightPos.x += add * deltaTime;
-			lightPos.z += add * deltaTime;
-			oldPhong.setUniform3f("u_LightPos", lightPos);
-			oldPhong.setUniform3f("u_CamPos", cam.Position);
-
-			deltaTime = deltaClock.reset();
-			/* Render here */
 			renderer.Clear();
+
+			/* Move the Light */
+			light.setPosition({2.f * sin(runtimeClock.getElapsedTime()), -1.f, 2.f * cos(runtimeClock.getElapsedTime())});
+			oldPhong.setUniform3f("u_LightPos", light.getPosition());
+			oldPhong.setUniform3f("u_CamPos", cam.Position);
 
 			view = cam.GetViewMatrix();
 			cam.MouseRotate(inputManager.getMouseOffset().x * 0.12f, inputManager.getMouseOffset().y * 0.12f);
-			
-			glfwGetWindowSize(window, &wwidth, &wheight);
-			projection = glm::perspective(glm::radians(80.f), (float)wwidth / (float)wheight, 0.1f, 1000.f);
+			projection = cam.GetProjectionMatrix();
 
-			boxModel = glm::translate(glm::mat4(), lightPos);
+			boxModel = glm::translate(glm::mat4(), light.getPosition());
 			boxModel = glm::scale(boxModel, glm::vec3(0.2f, 0.2f, 0.2f));
+
+			
+			/* Render here */
+			phongMat.Bind();
+			phongMat.Update();
+			renderer.DrawObj(walls, phongMat);
+
 			dhlPaket.Bind(0);
 			phong.Bind();
 			phong.setUniform1i("u_Tex", 0); //dhlPaket is in unit 0
@@ -179,6 +190,24 @@ int main(void)
 			renderer.Draw(landscape.m_va, landscape.m_ib, oldPhong);
 			landscapeTex.Unbind();
 
+			
+
+			/*floorTex.Bind(0);
+			oldPhong.setUniform1i("u_Tex", 0); //landscapeTex is in unit 0
+			oldPhong.setUniformMat4f("u_ViewMatrix", view, false);
+			oldPhong.setUniformMat4f("u_ProjectionMatrix", projection, false);
+			oldPhong.setUniformMat4f("u_ModelMatrix", dungeonModel, false);
+			renderer.Draw(floor.m_va, floor.m_ib, oldPhong);
+			floorTex.Unbind();
+
+			wallTex.Bind(0);
+			oldPhong.setUniform1i("u_Tex", 0); //landscapeTex is in unit 0
+			oldPhong.setUniformMat4f("u_ViewMatrix", view, false);
+			oldPhong.setUniformMat4f("u_ProjectionMatrix", projection, false);
+			oldPhong.setUniformMat4f("u_ModelMatrix", dungeonModel, false);
+			renderer.Draw(walls.m_va, walls.m_ib, oldPhong);
+			wallTex.Unbind();*/
+
 			/*
 			 *Continue here (at 1:48 min)
 			 *https://www.youtube.com/watch?v=bcxX0R8nnDs&index=11&list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP
@@ -204,7 +233,11 @@ int main(void)
 				cam.Translate(Camera_Movement::LEFT, deltaTime);
 			if (inputManager.KeyDown(GLFW_KEY_D))
 				cam.Translate(Camera_Movement::RIGHT, deltaTime);
-
+			
+			if (inputManager.KeyDown(GLFW_KEY_KP_ADD))
+				cam.far += 8.f * deltaTime;
+			if (inputManager.KeyDown(GLFW_KEY_KP_SUBTRACT))
+				cam.far -= 8.f * deltaTime;
 		}
 
 	}
