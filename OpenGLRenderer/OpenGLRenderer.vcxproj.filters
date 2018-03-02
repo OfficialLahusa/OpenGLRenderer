@@ -62,6 +62,12 @@
     <ClCompile Include="src\Material.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="src\UI\Quad.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TransformableMatrix.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VertexBuffer.h" />
@@ -78,6 +84,8 @@
     <ClInclude Include="src\Clock.h" />
     <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\Material.h" />
+    <ClInclude Include="src\UI\Quad.h" />
+    <ClInclude Include="src\TransformableMatrix.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\cGrid.png">

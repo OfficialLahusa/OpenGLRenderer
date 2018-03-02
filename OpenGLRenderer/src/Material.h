@@ -47,7 +47,6 @@ public:
 class OldPhongMaterial : public Material {
 private:
 	Shader m_shader;
-	Texture m_tex;
 	PointLight& m_light;
 	Camera& m_cam;
 	glm::mat4 m_model;
@@ -57,15 +56,17 @@ private:
 	float m_specularIntensity = 0.5f;
 
 public:
-	OldPhongMaterial(PointLight& light, Camera& cam);
+	OldPhongMaterial(PointLight& light, Camera& cam, Texture& tex);
 	~OldPhongMaterial();
 
 	void Update() override;
 
+	Texture* m_tex;
+
 	void loadLight(PointLight light);
 	void loadCamera(Camera cam);
 	void loadModel(glm::mat4 model);
-	void loadTexture(const std::string& filepath);
+	void setTexture(Texture& tex);
 
 	void setAmbIntensity(float v) {
 		m_ambientIntensity = v;

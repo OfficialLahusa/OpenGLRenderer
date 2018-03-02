@@ -158,7 +158,7 @@ void ObjLoader::loadObj(fMeshData& outData, const std::string & filepath) {
 	}
 }
 
-ObjFile::ObjFile(fMeshData data)
+Mesh::Mesh(fMeshData data)
 	: m_vb(&data.first[0], data.first.size() * sizeof(float))
 	, m_ib(&data.second[0], data.second.size())
 {
@@ -168,7 +168,7 @@ ObjFile::ObjFile(fMeshData data)
 	m_va.AddBuffer(m_vb, m_vbl);
 }
 
-ObjFile::ObjFile(const std::string & filepath) {
+Mesh::Mesh(const std::string & filepath) {
 	fMeshData data;
 	ObjLoader ld;
 	ld.loadObj(data, filepath);
@@ -182,10 +182,10 @@ ObjFile::ObjFile(const std::string & filepath) {
 
 
 
-ObjFile::ObjFile() {
+Mesh::Mesh() {
 
 }
 
-ObjFile::~ObjFile() {
+Mesh::~Mesh() {
 
 }

@@ -57,14 +57,16 @@ void main() {
 	float cosAngle = max(0.0, dot(surfaceToCamera, reflectionVector));
 	float specularCoefficient = pow(cosAngle, 1);
 
+	if (texture(u_Tex, fragTexCoord).w == 0.f)
+		discard;
 
-	vec3 ambient = texture(u_Tex, fragTexCoord).rgb * u_AmbientIntensity;
-	vec3 diffuse = texture(u_Tex, fragTexCoord).rgb * diffuseCoefficient * u_DiffuseIntensity;
-	vec3 specular = specularCoefficient * u_SpecularColor * u_SpecularIntensity;
+	vec4 ambient = texture(u_Tex, fragTexCoord) * u_AmbientIntensity;
+	vec4 diffuse = texture(u_Tex, fragTexCoord) * diffuseCoefficient * u_DiffuseIntensity;
+	vec4 specular = vec4(specularCoefficient * u_SpecularColor * u_SpecularIntensity, 1.f);
 
 	float attenuation = 1.0 / (1.0 + u_Attenuation * pow(length(u_LightPos - surfacePos), 2));
 
-	FragColor = vec4(ambient + attenuation * (diffuse + specular), 1.0f);
+	FragColor = ambient + attenuation * (diffuse + specular);
 	//FragColor = texture(u_Tex, fragTexCoord);
 	
 }

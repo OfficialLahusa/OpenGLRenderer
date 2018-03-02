@@ -9,14 +9,14 @@
 
 typedef std::pair<std::vector<float>, std::vector<unsigned int>> fMeshData;
 
-class ObjFile {
+class Mesh {
 private:
 
 public:
-	ObjFile(fMeshData);
-	ObjFile(const std::string& filepath);
-	ObjFile();
-	~ObjFile();
+	Mesh(fMeshData);
+	Mesh(const std::string& filepath);
+	Mesh();
+	~Mesh();
 
 	VertexArray m_va;
 	VertexBuffer m_vb;

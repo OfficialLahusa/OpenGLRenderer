@@ -32,7 +32,7 @@ private:
 
 public:
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
-	void DrawObj(ObjFile& obj, Material& mat);
+	void Draw(Mesh& obj, Material& mat);
 	void Clear();
 	glm::ivec2 getWindowSize(GLFWwindow* window);
 };

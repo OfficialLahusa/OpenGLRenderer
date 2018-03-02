@@ -103,10 +103,13 @@ void Texture::loadFromData(unsigned char * data, int& width, int& height) {
 void Texture::loadFromFile(const std::string& filepath) {
 	Bind(0);
 
-	int x, y, layers;
-	unsigned char* data = stbi_load(filepath.c_str(), &x, &y, &layers, STBI_rgb);
+	int x = 0, y = 0, layers = 0;
+	unsigned char* data = stbi_load(filepath.c_str(), &x, &y, &layers, STBI_rgb_alpha);
 	if (data) {
-		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
+		int a = 2;
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		//GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
+		a = 5;
 		GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 		m_Size = glm::vec2(x, y);
 		m_layerCount = layers;

@@ -21,6 +21,7 @@
 #include "ObjLoader.h"
 #include "Clock.h"
 #include "Light.h"
+#include "TransformableMatrix.h"
 
 int main(void)
 {
@@ -71,18 +72,20 @@ int main(void)
 
 	{
 		ObjLoader objLoader;
-		fMeshData objectData, potData, waterData;
+		fMeshData objectData, potData;
 
 		objLoader.loadObj(objectData, "res/models/var1_triangulated.obj");
 		objLoader.loadObj(potData, "res/models/pot.obj");
-		objLoader.loadObj(waterData, "res/Scenes/Landscapes/test_1/water.obj");
 
-		ObjFile object(objectData);
-		ObjFile	pot(potData);
-		ObjFile	landscape("res/Scenes/Landscapes/test_1/landscape.obj");
-		ObjFile	water(waterData);
-		ObjFile floor("res/Themes/FancyDungeon/preview/floor.obj");
-		ObjFile walls("res/Themes/FancyDungeon/preview/walls.obj");
+		Mesh object(objectData);
+		Mesh pot(potData);
+		Mesh landscape("res/Scenes/Landscapes/test_1/landscape.obj");
+		Mesh water("res/Scenes/Landscapes/test_1/water.obj");
+		Mesh floor("res/Themes/FancyDungeon/preview/floor.obj");
+		Mesh walls("res/Themes/FancyDungeon/preview/walls.obj");
+		//Mesh dragon("res/models/dragon_personalUse/con-armadura.obj");
+		Mesh fern("res/models/fern_1_gameready.obj");
+		Mesh woodenFloor("res/models/construction/wooden_planks.obj");
 
 		Shader texturedShader("res/shaders/textured.shader");
 		Shader oldPhong("res/shaders/phong_old.shader");	//some things derived from: https://www.tomdalling.com/blog/modern-opengl/07-more-lighting-ambient-specular-attenuation-gamma/
@@ -95,14 +98,14 @@ int main(void)
 		Texture waterTex("res/Scenes/Landscapes/test_1/waterTex.png");
 		Texture floorTex("res/Themes/FancyDungeon/DefaultRooms/FloorTile/1_tex.png");
 		Texture wallTex("res/Themes/FancyDungeon/DefaultRooms/WallTile/1_tex.png");
-		
+		Texture fernTex("res/textures/fern.png");
+		Texture bareWoodenPlanks("res/textures/wood_bare.jpg");
 
 		//Uniform data preparation
-		glm::mat4 dungeonModel, waterModel, landscapeModel, boxModel, view, projection;
+		glm::mat4 dungeonModel, dragonModel, waterModel, landscapeModel, view, projection;
 		int wwidth, wheight;
 
-		boxModel = glm::translate(glm::mat4(), glm::vec3(0.f, 0.f, 0.f));
-		boxModel = glm::scale(boxModel, glm::vec3(0.2f, 0.2f, 0.2f));
+		TransformableMatrix boxModel(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
 
 		waterModel = glm::translate(glm::mat4(), glm::vec3(0.f, -2.f, 0.f));
 		waterModel = glm::scale(waterModel, glm::vec3(0.1f, 0.1f, 0.1f));
@@ -111,6 +114,11 @@ int main(void)
 		landscapeModel = glm::scale(landscapeModel, glm::vec3(0.1f, 0.1f, 0.1f));
 
 		dungeonModel = glm::translate(glm::mat4(), glm::vec3(0.f, -1.f, 0.f));
+
+		/*dragonModel = glm::rotate(glm::mat4(), 0.08f, glm::vec3(1.f, 0.f, 0.f));
+		dragonModel = glm::scale(dragonModel, glm::vec3(0.3f, 0.3f, 0.3f));
+		dragonModel = glm::translate(dragonModel, glm::vec3(0.f, -5.7f, 0.f));*/
+		
 
 		Renderer renderer;
 
@@ -127,9 +135,8 @@ int main(void)
 		PointLight light({ 0.f, -1.f, 0.f }, { 1.f, 1.f, 1.f });
 		float lightMove = 1.f;
 
-		OldPhongMaterial phongMat(light, cam);
+		OldPhongMaterial phongMat(light, cam, landscapeTex);
 		phongMat.Bind();
-		phongMat.loadTexture("res/Themes/FancyDungeon/DefaultRooms/WallTile/1_tex.png");
 		phongMat.loadModel(dungeonModel);
 
 		oldPhong.Bind();
@@ -154,21 +161,36 @@ int main(void)
 			cam.MouseRotate(inputManager.getMouseOffset().x * 0.12f, inputManager.getMouseOffset().y * 0.12f);
 			projection = cam.GetProjectionMatrix();
 
-			boxModel = glm::translate(glm::mat4(), light.getPosition());
-			boxModel = glm::scale(boxModel, glm::vec3(0.2f, 0.2f, 0.2f));
+			boxModel.setPosition(light.getPosition());
 
 			
 			/* Render here */
-			phongMat.Bind();
+			/*phongMat.m_tex = &wallTex;
+			phongMat.loadModel(dragonModel);
 			phongMat.Update();
-			renderer.DrawObj(walls, phongMat);
+			renderer.Draw(dragon, phongMat);
+
+			phongMat.m_tex = &floorTex;
+			phongMat.loadModel(dungeonModel);
+			phongMat.Update();
+			renderer.Draw(walls, phongMat);
+
+			phongMat.m_tex = &fernTex;
+			phongMat.loadModel(landscapeModel);
+			phongMat.Update();
+			renderer.Draw(fern, phongMat);*/
+
+			phongMat.m_tex = &bareWoodenPlanks;
+			phongMat.loadModel(dungeonModel);
+			phongMat.Update();
+			renderer.Draw(woodenFloor, phongMat);
 
 			dhlPaket.Bind(0);
 			phong.Bind();
 			phong.setUniform1i("u_Tex", 0); //dhlPaket is in unit 0
 			phong.setUniformMat4f("u_ViewMatrix", view, false);
 			phong.setUniformMat4f("u_ProjectionMatrix", projection, false);
-			phong.setUniformMat4f("u_ModelMatrix", boxModel, false);
+			phong.setUniformMat4f("u_ModelMatrix", boxModel.getMatrix(), false);
 			renderer.Draw(object.m_va, object.m_ib, phong);
 			dhlPaket.Unbind();
 		
@@ -235,9 +257,9 @@ int main(void)
 				cam.Translate(Camera_Movement::RIGHT, deltaTime);
 			
 			if (inputManager.KeyDown(GLFW_KEY_KP_ADD))
-				cam.far += 8.f * deltaTime;
+				boxModel.setScale(boxModel.getScale() + glm::vec3(0.3f * deltaTime));
 			if (inputManager.KeyDown(GLFW_KEY_KP_SUBTRACT))
-				cam.far -= 8.f * deltaTime;
+				boxModel.setScale(boxModel.getScale() - glm::vec3(0.3f * deltaTime));
 		}
 
 	}
