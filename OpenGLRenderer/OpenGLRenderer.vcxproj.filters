@@ -21,6 +21,7 @@
     <None Include="res\shaders\textured.shader" />
     <None Include="res\shaders\phong_old.shader" />
     <None Include="res\shaders\phong.shader" />
+    <None Include="res\shaders\projectiveTexturing.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">

@@ -20,31 +20,6 @@ public:
 };
 
 class PhongMaterial : public Material {
-
-private:
-	Shader m_shader;
-	Texture m_tex;
-
-	float m_ambientIntensity;
-	float m_diffuseIntensity;
-	float m_specularIntensity;
-
-public:
-	PhongMaterial();
-	~PhongMaterial();
-
-	void Update() override;
-
-	void loadLight(PointLight light);
-	void loadCamera(Camera cam);
-	void loadModel(glm::mat4 model);
-	void loadTexture(const std::string& filepath);
-
-	void Bind() override;
-	void Unbind() override;
-};
-
-class OldPhongMaterial : public Material {
 private:
 	Shader m_shader;
 	PointLight& m_light;
@@ -56,8 +31,8 @@ private:
 	float m_specularIntensity = 0.5f;
 
 public:
-	OldPhongMaterial(PointLight& light, Camera& cam, Texture& tex);
-	~OldPhongMaterial();
+	PhongMaterial(PointLight& light, Camera& cam, Texture& tex);
+	~PhongMaterial();
 
 	void Update() override;
 

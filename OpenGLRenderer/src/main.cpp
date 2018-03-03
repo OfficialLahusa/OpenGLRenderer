@@ -35,9 +35,16 @@ int main(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+
+	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(16 * 8 * 10, 9 * 8 * 10, "Schloss Pinneberg Engine", NULL, NULL);
+	window = glfwCreateWindow(mode->width, mode->height, "Schloss Pinneberg Engine", primaryMonitor, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -105,7 +112,7 @@ int main(void)
 		glm::mat4 dungeonModel, dragonModel, waterModel, landscapeModel, view, projection;
 		int wwidth, wheight;
 
-		TransformableMatrix boxModel(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
+		TransformableMatrix boxModel(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.f, 0.f, 0.f));
 
 		waterModel = glm::translate(glm::mat4(), glm::vec3(0.f, -2.f, 0.f));
 		waterModel = glm::scale(waterModel, glm::vec3(0.1f, 0.1f, 0.1f));
@@ -135,7 +142,7 @@ int main(void)
 		PointLight light({ 0.f, -1.f, 0.f }, { 1.f, 1.f, 1.f });
 		float lightMove = 1.f;
 
-		OldPhongMaterial phongMat(light, cam, landscapeTex);
+		PhongMaterial phongMat(light, cam, landscapeTex);
 		phongMat.Bind();
 		phongMat.loadModel(dungeonModel);
 
@@ -256,10 +263,11 @@ int main(void)
 			if (inputManager.KeyDown(GLFW_KEY_D))
 				cam.Translate(Camera_Movement::RIGHT, deltaTime);
 			
+			/*
 			if (inputManager.KeyDown(GLFW_KEY_KP_ADD))
-				boxModel.setScale(boxModel.getScale() + glm::vec3(0.3f * deltaTime));
+				
 			if (inputManager.KeyDown(GLFW_KEY_KP_SUBTRACT))
-				boxModel.setScale(boxModel.getScale() - glm::vec3(0.3f * deltaTime));
+			*/
 		}
 
 	}
