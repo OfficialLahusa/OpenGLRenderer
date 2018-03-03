@@ -23,6 +23,8 @@
 #include "Light.h"
 #include "TransformableMatrix.h"
 
+#define WINDOWED true
+
 int main(void)
 {
 	GLFWwindow* window;
@@ -44,7 +46,10 @@ int main(void)
 	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(mode->width, mode->height, "Schloss Pinneberg Engine", primaryMonitor, NULL);
+	if(WINDOWED)
+		window = glfwCreateWindow(mode->width, mode->height, "Schloss Pinneberg Engine", primaryMonitor, NULL);
+	else
+		window = glfwCreateWindow(mode->width, mode->height, "Schloss Pinneberg Engine", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
