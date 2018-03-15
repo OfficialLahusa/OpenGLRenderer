@@ -18,7 +18,7 @@ Texture::Texture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
-Texture::Texture(const std::string& filepath)
+Texture::Texture(const std::string& filepaths)
 	: m_layerCount(0)
 	, m_Size({ 0, 0 }) {
 	stbi_set_flip_vertically_on_load(true);
@@ -29,7 +29,7 @@ Texture::Texture(const std::string& filepath)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	loadFromFile(filepath);
+	loadFromFile(filepaths);
 }
 
 Texture::~Texture() {
@@ -49,14 +49,14 @@ unsigned int Texture::getLayerCount() {
 }
 
 void Texture::Bind(unsigned short unit) const { // maximum unit is 15 (range: 0 - 15)
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D, m_RendererId);
+	GLCall(glActiveTexture(GL_TEXTURE0 + unit));
+	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererId));
 }
 
 void Texture::Unbind() const {
 	for (unsigned short i = 0; i < 15; i++) {
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		GLCall(glActiveTexture(GL_TEXTURE0 + i));
+		GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 	}
 }
 
@@ -115,7 +115,7 @@ void Texture::loadFromFile(const std::string& filepath) {
 		m_layerCount = layers;
 	}
 	else {
-		std::cout << "Failed to load texture" << std::endl;
+		std::cout << "[Error] Failed to load texture: " << filepath << ".\n";
 	}
 	stbi_image_free(data);
 	Unbind();

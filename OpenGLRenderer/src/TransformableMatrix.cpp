@@ -7,9 +7,9 @@ TransformableMatrix::TransformableMatrix(glm::vec3 pos, glm::vec3 scale, glm::ve
 	m_Matrix = glm::rotate(m_Matrix, rot.z, glm::vec3(0.f, 0.f, 1.f));
 
 	m_Matrix = glm::scale(m_Matrix, scale);
-	m_Matrix = glm::translate(m_Matrix, pos);
+	m_Matrix = glm::translate(m_Matrix, pos * (glm::vec3(1.f) / scale));
 
-	m_totalPosition = pos;
+	m_totalPosition += pos * (glm::vec3(1.f) / scale);
 	m_totalRotation = rot;
 	m_totalScale = scale;
 }

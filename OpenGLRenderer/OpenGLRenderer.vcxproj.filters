@@ -20,8 +20,9 @@
     <None Include="res\shaders\vertexColor.shader" />
     <None Include="res\shaders\textured.shader" />
     <None Include="res\shaders\phong_old.shader" />
-    <None Include="res\shaders\phong.shader" />
     <None Include="res\shaders\projectiveTexturing.shader" />
+    <None Include="res\shaders\skybox.shader" />
+    <None Include="res\shaders\reflect.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -69,6 +70,12 @@
     <ClCompile Include="src\TransformableMatrix.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="src\Cubemap.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Skybox.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VertexBuffer.h" />
@@ -87,6 +94,8 @@
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\UI\Quad.h" />
     <ClInclude Include="src\TransformableMatrix.h" />
+    <ClInclude Include="src\Cubemap.h" />
+    <ClInclude Include="src\Skybox.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\cGrid.png">

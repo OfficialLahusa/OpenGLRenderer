@@ -68,3 +68,25 @@ public:
 	void Bind() override;
 	void Unbind() override;
 };
+
+class ProjectiveTexturingMaterial : public Material {
+private:
+	Shader m_shader;
+	Camera& m_cam;
+	glm::mat4 m_model;
+
+public:
+	ProjectiveTexturingMaterial(Camera& cam, Texture& tex);
+	~ProjectiveTexturingMaterial();
+
+	void Update() override;
+
+	Texture* m_tex;
+
+	void loadCamera(Camera cam);
+	void loadModel(glm::mat4 model);
+	void setTexture(Texture& tex);
+
+	void Bind() override;
+	void Unbind() override;
+};

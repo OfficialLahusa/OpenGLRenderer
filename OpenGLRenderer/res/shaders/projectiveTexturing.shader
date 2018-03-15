@@ -6,13 +6,15 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoord;
 
 out vec2 TexCoord;
+out vec4 pass_Position;
 
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ProjectionMatrix;
 uniform mat4 u_ModelMatrix;
 
 void main() {
-	gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(aPosition, 1.0);
+	pass_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(aPosition, 1.0);
+	gl_Position = pass_Position;
 	TexCoord = aTexCoord;
 }
 
@@ -22,9 +24,10 @@ void main() {
 out vec4 FragColor;
 
 in vec2 TexCoord;
+in vec4 pass_Position;
 
 uniform sampler2D u_Tex;
 
 void main() {
-	FragColor = texture(u_Tex, gl_Position.xy);
+	FragColor = texture(u_Tex, pass_Position.xy);
 }

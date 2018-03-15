@@ -34,6 +34,20 @@ void Renderer::Draw(Mesh& obj, Material& mat) {
 	GLCall(glDrawElements(GL_TRIANGLES, obj.m_ib.GetCount(), GL_UNSIGNED_INT, nullptr));
 }
 
+void Renderer::Draw(Skybox & skybox, glm::mat4 projection, glm::mat4 view) {
+	GLCall(glDepthMask(GL_FALSE));
+	skybox.shader.Bind();
+	skybox.shader.setUniformMat4f("u_ProjectionMatrix", projection, false);
+	glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
+	skybox.shader.setUniformMat4f("u_ViewMatrix", skyboxView, false);
+	skybox.projectionCube.m_va.Bind();
+	skybox.projectionCube.m_ib.Bind();
+	skybox.cubemap.Bind(0);
+	skybox.shader.setUniform1i("u_SkyboxTex", 0);
+	GLCall(glDrawElements(GL_TRIANGLES, skybox.projectionCube.m_ib.GetCount(), GL_UNSIGNED_INT, nullptr));
+	GLCall(glDepthMask(GL_TRUE));
+}
+
 void Renderer::Clear() {
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }

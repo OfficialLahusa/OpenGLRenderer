@@ -22,8 +22,10 @@
 #include "Clock.h"
 #include "Light.h"
 #include "TransformableMatrix.h"
+#include "Cubemap.h"
+#include "Skybox.h"
 
-#define WINDOWED true
+#define WINDOWED false
 
 int main(void)
 {
@@ -55,18 +57,10 @@ int main(void)
 		glfwTerminate();
 		return -1;
 	}
-
-
 	// Make the window's context current
 	glfwMakeContextCurrent(window);
-
-	InputManager inputManager(window);
-	inputManager.setCursorVisible(false);
-
-	//glfwSwapInterval(1); now replaced with clock
-
 	glfwSetWindowSizeCallback(window, ResizeWindowCallBack);
-	GLCall(glEnable(GL_DEPTH_TEST));
+
 
 	// glewInit works after Context creation (1 line above)
 	GLenum err = glewInit();
@@ -81,8 +75,12 @@ int main(void)
 
 	// Print version
 	GLCall(std::cout << glGetString(GL_VERSION) << std::endl);
+	GLCall(glEnable(GL_DEPTH_TEST));
 
 	{
+		InputManager inputManager(window);
+		inputManager.setCursorVisible(false);
+
 		ObjLoader objLoader;
 		fMeshData objectData, potData;
 
@@ -98,10 +96,11 @@ int main(void)
 		//Mesh dragon("res/models/dragon_personalUse/con-armadura.obj");
 		Mesh fern("res/models/fern_1_gameready.obj");
 		Mesh woodenFloor("res/models/construction/wooden_planks.obj");
+		Mesh icosphere("res/models/icosphere.obj");
 
 		Shader texturedShader("res/shaders/textured.shader");
 		Shader oldPhong("res/shaders/phong_old.shader");	//some things derived from: https://www.tomdalling.com/blog/modern-opengl/07-more-lighting-ambient-specular-attenuation-gamma/
-		Shader phong("res/shaders/phong.shader");
+		Shader reflect("res/shaders/reflect.shader");
 
 		Texture grid("res/textures/cGrid.png");
 		Texture white("res/textures/white.png");
@@ -113,19 +112,23 @@ int main(void)
 		Texture fernTex("res/textures/fern.png");
 		Texture bareWoodenPlanks("res/textures/wood_bare.jpg");
 
+		Cubemap skyboxTex({ "res/cubemaps/skybox/right.jpg",
+			"res/cubemaps/skybox/left.jpg",
+			"res/cubemaps/skybox/top.jpg",
+			"res/cubemaps/skybox/bottom.jpg",
+			"res/cubemaps/skybox/front.jpg",
+			"res/cubemaps/skybox/back.jpg",
+		});
+		Skybox skybox(skyboxTex);
+
 		//Uniform data preparation
-		glm::mat4 dungeonModel, dragonModel, waterModel, landscapeModel, view, projection;
+		glm::mat4 dragonModel, view, projection;
 		int wwidth, wheight;
 
 		TransformableMatrix boxModel(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.f, 0.f, 0.f));
-
-		waterModel = glm::translate(glm::mat4(), glm::vec3(0.f, -2.f, 0.f));
-		waterModel = glm::scale(waterModel, glm::vec3(0.1f, 0.1f, 0.1f));
-
-		landscapeModel = glm::translate(glm::mat4(), glm::vec3(0.f, -2.f, 0.f));
-		landscapeModel = glm::scale(landscapeModel, glm::vec3(0.1f, 0.1f, 0.1f));
-
-		dungeonModel = glm::translate(glm::mat4(), glm::vec3(0.f, -1.f, 0.f));
+		TransformableMatrix waterModel(glm::vec3(0.f, -2.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.f, 0.f, 0.f));
+		TransformableMatrix landscapeModel(glm::vec3(0.f, -2.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.f, 0.f, 0.f));
+		TransformableMatrix dungeonModel(glm::vec3(0.f, -1.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
 
 		/*dragonModel = glm::rotate(glm::mat4(), 0.08f, glm::vec3(1.f, 0.f, 0.f));
 		dragonModel = glm::scale(dragonModel, glm::vec3(0.3f, 0.3f, 0.3f));
@@ -149,7 +152,10 @@ int main(void)
 
 		PhongMaterial phongMat(light, cam, landscapeTex);
 		phongMat.Bind();
-		phongMat.loadModel(dungeonModel);
+		phongMat.loadModel(dungeonModel.getMatrix());
+
+		ProjectiveTexturingMaterial doorMat(cam, grid);
+		doorMat.loadModel(dungeonModel.getMatrix());
 
 		oldPhong.Bind();
 		oldPhong.setUniform1f("u_AmbientIntensity", 0.2f);
@@ -160,6 +166,10 @@ int main(void)
 		// Window Loop
 		while (!glfwWindowShouldClose(window)) {
 			deltaTime = deltaClock.reset();
+			
+			std::string title = "Schloss Pinneberg Engine, FPS: " + std::to_string((int)(1 / deltaTime));
+			glfwSetWindowTitle(window, title.c_str());
+			
 
 			glClearColor(0.f, 0.f, 0.1f, 1.f);
 			renderer.Clear();
@@ -174,9 +184,10 @@ int main(void)
 			projection = cam.GetProjectionMatrix();
 
 			boxModel.setPosition(light.getPosition());
-
 			
 			/* Render here */
+			renderer.Draw(skybox, projection, view);
+
 			/*phongMat.m_tex = &wallTex;
 			phongMat.loadModel(dragonModel);
 			phongMat.Update();
@@ -192,18 +203,18 @@ int main(void)
 			phongMat.Update();
 			renderer.Draw(fern, phongMat);*/
 
-			phongMat.m_tex = &bareWoodenPlanks;
-			phongMat.loadModel(dungeonModel);
+			/*phongMat.m_tex = &bareWoodenPlanks;
+			phongMat.loadModel(dungeonModel.getMatrix());
 			phongMat.Update();
-			renderer.Draw(woodenFloor, phongMat);
+			renderer.Draw(woodenFloor, phongMat);*/
 
 			dhlPaket.Bind(0);
-			phong.Bind();
-			phong.setUniform1i("u_Tex", 0); //dhlPaket is in unit 0
-			phong.setUniformMat4f("u_ViewMatrix", view, false);
-			phong.setUniformMat4f("u_ProjectionMatrix", projection, false);
-			phong.setUniformMat4f("u_ModelMatrix", boxModel.getMatrix(), false);
-			renderer.Draw(object.m_va, object.m_ib, phong);
+			texturedShader.Bind();
+			texturedShader.setUniform1i("u_Tex", 0); //dhlPaket is in unit 0
+			texturedShader.setUniformMat4f("u_ViewMatrix", view, false);
+			texturedShader.setUniformMat4f("u_ProjectionMatrix", projection, false);
+			texturedShader.setUniformMat4f("u_ModelMatrix", boxModel.getMatrix(), false);
+			renderer.Draw(object.m_va, object.m_ib, texturedShader);
 			dhlPaket.Unbind();
 		
 			waterTex.Bind(0);
@@ -211,7 +222,7 @@ int main(void)
 			oldPhong.setUniform1i("u_Tex", 0); //waterTex is in unit 0
 			oldPhong.setUniformMat4f("u_ViewMatrix", view, false);
 			oldPhong.setUniformMat4f("u_ProjectionMatrix", projection, false);
-			oldPhong.setUniformMat4f("u_ModelMatrix", waterModel, false);
+			oldPhong.setUniformMat4f("u_ModelMatrix", waterModel.getMatrix(), false);
 			renderer.Draw(water.m_va, water.m_ib, oldPhong);
 			waterTex.Unbind();
 
@@ -220,7 +231,7 @@ int main(void)
 			oldPhong.setUniform1i("u_Tex", 0); //landscapeTex is in unit 0
 			oldPhong.setUniformMat4f("u_ViewMatrix", view, false);
 			oldPhong.setUniformMat4f("u_ProjectionMatrix", projection, false);
-			oldPhong.setUniformMat4f("u_ModelMatrix", landscapeModel, false);
+			oldPhong.setUniformMat4f("u_ModelMatrix", landscapeModel.getMatrix(), false);
 			renderer.Draw(landscape.m_va, landscape.m_ib, oldPhong);
 			landscapeTex.Unbind();
 
