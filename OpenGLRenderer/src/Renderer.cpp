@@ -34,6 +34,13 @@ void Renderer::Draw(Mesh& obj, Material& mat) {
 	GLCall(glDrawElements(GL_TRIANGLES, obj.m_ib.GetCount(), GL_UNSIGNED_INT, nullptr));
 }
 
+void Renderer::Draw(GameObject & obj) {
+	obj.Bind();
+	obj.Update();
+	GLCall(glDrawElements(GL_TRIANGLES, obj.mesh.m_ib.GetCount(), GL_UNSIGNED_INT, nullptr));
+	obj.Unbind();
+}
+
 void Renderer::Draw(Skybox & skybox, glm::mat4 projection, glm::mat4 view) {
 	GLCall(glDepthMask(GL_FALSE));
 	skybox.shader.Bind();

@@ -75,7 +75,10 @@ int main(void)
 
 	// Print version
 	GLCall(std::cout << glGetString(GL_VERSION) << std::endl);
+
+	//GL Settings
 	GLCall(glEnable(GL_DEPTH_TEST));
+	GLCall(glDepthFunc(GL_LEQUAL));
 
 	{
 		InputManager inputManager(window);
@@ -85,11 +88,10 @@ int main(void)
 		fMeshData objectData, potData;
 
 		objLoader.loadObj(objectData, "res/models/var1_triangulated.obj");
-		objLoader.loadObj(potData, "res/models/pot.obj");
 
 		Mesh object(objectData);
-		Mesh pot(potData);
-		Mesh landscape("res/Scenes/Landscapes/test_1/landscape.obj");
+		Mesh pot("res/models/pot.obj");
+		//Mesh landscape("res/Scenes/Landscapes/test_1/landscape.obj");
 		Mesh water("res/Scenes/Landscapes/test_1/water.obj");
 		Mesh floor("res/Themes/FancyDungeon/preview/floor.obj");
 		Mesh walls("res/Themes/FancyDungeon/preview/walls.obj");
@@ -105,7 +107,7 @@ int main(void)
 		Texture grid("res/textures/cGrid.png");
 		Texture white("res/textures/white.png");
 		Texture dhlPaket("res/textures/variation_2.png");
-		Texture landscapeTex("res/Scenes/Landscapes/test_1/landscape_painted.png");
+		//Texture landscapeTex("res/Scenes/Landscapes/test_1/landscape_painted.png");
 		Texture waterTex("res/Scenes/Landscapes/test_1/waterTex.png");
 		Texture floorTex("res/Themes/FancyDungeon/DefaultRooms/FloorTile/1_tex.png");
 		Texture wallTex("res/Themes/FancyDungeon/DefaultRooms/WallTile/1_tex.png");
@@ -127,13 +129,12 @@ int main(void)
 
 		TransformableMatrix boxModel(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.f, 0.f, 0.f));
 		TransformableMatrix waterModel(glm::vec3(0.f, -2.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.f, 0.f, 0.f));
-		TransformableMatrix landscapeModel(glm::vec3(0.f, -2.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.f, 0.f, 0.f));
+		//TransformableMatrix landscapeModel(glm::vec3(0.f, -2.f, 0.f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.f, 0.f, 0.f));
 		TransformableMatrix dungeonModel(glm::vec3(0.f, -1.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
 
 		/*dragonModel = glm::rotate(glm::mat4(), 0.08f, glm::vec3(1.f, 0.f, 0.f));
 		dragonModel = glm::scale(dragonModel, glm::vec3(0.3f, 0.3f, 0.3f));
-		dragonModel = glm::translate(dragonModel, glm::vec3(0.f, -5.7f, 0.f));*/
-		
+		dragonModel = glm::translate(dragonModel, glm::vec3(0.f, -5.7f, 0.f));*/	
 
 		Renderer renderer;
 
@@ -150,7 +151,7 @@ int main(void)
 		PointLight light({ 0.f, -1.f, 0.f }, { 1.f, 1.f, 1.f });
 		float lightMove = 1.f;
 
-		PhongMaterial phongMat(light, cam, landscapeTex);
+		PhongMaterial phongMat(light, cam, waterTex);
 		phongMat.Bind();
 		phongMat.loadModel(dungeonModel.getMatrix());
 
@@ -162,6 +163,14 @@ int main(void)
 		oldPhong.setUniform1f("u_DiffuseIntensity", 0.8f);
 		oldPhong.setUniform1f("u_SpecularIntensity", 0.5f);
 		oldPhong.setUniform3f("u_SpecularColor", { 1.f, 1.f, 1.f });
+
+		GameObject landscape("res/Scenes/Landscapes/test_1/landscape.obj",
+			"res/Scenes/Landscapes/test_1/landscape_painted.png",
+			light,
+			cam);
+		landscape.transform = TransformableMatrix(glm::vec3(0.f, -2.f, 0.f), //translation
+			glm::vec3(0.1f, 0.1f, 0.1f), //scale
+			glm::vec3(0.f, 0.f, 0.f)); //rotation
 
 		// Window Loop
 		while (!glfwWindowShouldClose(window)) {
@@ -176,6 +185,7 @@ int main(void)
 
 			/* Move the Light */
 			light.setPosition({2.f * sin(runtimeClock.getElapsedTime()), -1.f, 2.f * cos(runtimeClock.getElapsedTime())});
+			oldPhong.Bind();
 			oldPhong.setUniform3f("u_LightPos", light.getPosition());
 			oldPhong.setUniform3f("u_CamPos", cam.Position);
 
@@ -186,27 +196,23 @@ int main(void)
 			boxModel.setPosition(light.getPosition());
 			
 			/* Render here */
-			renderer.Draw(skybox, projection, view);
 
-			/*phongMat.m_tex = &wallTex;
-			phongMat.loadModel(dragonModel);
-			phongMat.Update();
-			renderer.Draw(dragon, phongMat);
-
-			phongMat.m_tex = &floorTex;
-			phongMat.loadModel(dungeonModel);
+			/*phongMat.m_tex = &floorTex;
+			phongMat.loadModel(dungeonModel.getMatrix());
 			phongMat.Update();
 			renderer.Draw(walls, phongMat);
 
 			phongMat.m_tex = &fernTex;
-			phongMat.loadModel(landscapeModel);
+			phongMat.loadModel(landscapeModel.getMatrix());
 			phongMat.Update();
-			renderer.Draw(fern, phongMat);*/
+			renderer.Draw(fern, phongMat);
 
-			/*phongMat.m_tex = &bareWoodenPlanks;
+			phongMat.m_tex = &bareWoodenPlanks;
 			phongMat.loadModel(dungeonModel.getMatrix());
 			phongMat.Update();
 			renderer.Draw(woodenFloor, phongMat);*/
+
+			
 
 			dhlPaket.Bind(0);
 			texturedShader.Bind();
@@ -216,7 +222,7 @@ int main(void)
 			texturedShader.setUniformMat4f("u_ModelMatrix", boxModel.getMatrix(), false);
 			renderer.Draw(object.m_va, object.m_ib, texturedShader);
 			dhlPaket.Unbind();
-		
+
 			waterTex.Bind(0);
 			oldPhong.Bind();
 			oldPhong.setUniform1i("u_Tex", 0); //waterTex is in unit 0
@@ -225,19 +231,24 @@ int main(void)
 			oldPhong.setUniformMat4f("u_ModelMatrix", waterModel.getMatrix(), false);
 			renderer.Draw(water.m_va, water.m_ib, oldPhong);
 			waterTex.Unbind();
-
 			
-			landscapeTex.Bind(0);
+			
+			renderer.Draw(landscape);
+
+			/*landscapeTex.Bind(0);
+			oldPhong.Bind();
 			oldPhong.setUniform1i("u_Tex", 0); //landscapeTex is in unit 0
 			oldPhong.setUniformMat4f("u_ViewMatrix", view, false);
 			oldPhong.setUniformMat4f("u_ProjectionMatrix", projection, false);
 			oldPhong.setUniformMat4f("u_ModelMatrix", landscapeModel.getMatrix(), false);
 			renderer.Draw(landscape.m_va, landscape.m_ib, oldPhong);
-			landscapeTex.Unbind();
+			landscapeTex.Unbind();*/
 
+			renderer.Draw(skybox, projection, view);
 			
 
 			/*floorTex.Bind(0);
+			oldPhong.Bind();
 			oldPhong.setUniform1i("u_Tex", 0); //landscapeTex is in unit 0
 			oldPhong.setUniformMat4f("u_ViewMatrix", view, false);
 			oldPhong.setUniformMat4f("u_ProjectionMatrix", projection, false);
@@ -246,6 +257,7 @@ int main(void)
 			floorTex.Unbind();
 
 			wallTex.Bind(0);
+			oldPhong.Bind();
 			oldPhong.setUniform1i("u_Tex", 0); //landscapeTex is in unit 0
 			oldPhong.setUniformMat4f("u_ViewMatrix", view, false);
 			oldPhong.setUniformMat4f("u_ProjectionMatrix", projection, false);
@@ -256,9 +268,7 @@ int main(void)
 			/*
 			 *Continue here (at 1:48 min)
 			 *https://www.youtube.com/watch?v=bcxX0R8nnDs&index=11&list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP
-			 /
-
-
+			 */
 
 			/* Swap front and back buffers */
 			glfwSwapBuffers(window);

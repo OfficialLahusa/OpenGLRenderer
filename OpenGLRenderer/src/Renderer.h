@@ -11,6 +11,7 @@
 #include "ObjLoader.h"
 #include "Material.h"
 #include "Skybox.h"
+#include "GameObject.h"
 
 
 #define ASSERT(x) if(!(x)) __debugbreak();
@@ -34,6 +35,7 @@ private:
 public:
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
 	void Draw(Mesh& obj, Material& mat);
+	void Draw(GameObject& obj);
 	void Draw(Skybox& skybox, glm::mat4 projection, glm::mat4 view);
 	void Clear();
 	glm::ivec2 getWindowSize(GLFWwindow* window);

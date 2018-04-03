@@ -25,7 +25,6 @@ void PhongMaterial::Update() {
 	m_shader.setUniformMat4f("u_ProjectionMatrix", m_cam.GetProjectionMatrix(), false);
 	m_shader.setUniformMat4f("u_ModelMatrix", m_model, false);
 	m_shader.setUniform3f("u_CamPos", m_cam.Position);
-	Unbind();
 }
 
 void PhongMaterial::loadLight(PointLight light) {
