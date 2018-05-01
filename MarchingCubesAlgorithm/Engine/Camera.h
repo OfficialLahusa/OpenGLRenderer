@@ -6,7 +6,6 @@
 
 #include <vector>
 
-// Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
 	FORWARD,
 	BACKWARD,
@@ -24,6 +23,30 @@ const float SENSITIVTY = 0.1f;
 const float ZOOM = 45.0f;
 
 class Camera {
+public:
+	glm::vec3 Position;
+	glm::vec3 Front;
+	glm::vec3 Up;
+	glm::vec3 Right;
+	glm::vec3 WorldUp;
+
+	float pMovementSpeed;
+	float pMouseSensitivity;
+	float pZoom;
+
+	float fov;
+	float aspectRatio;
+	float near;
+	float far;
+
+	virtual glm::mat4 GetViewMatrix() = 0;
+	virtual glm::mat4 GetProjectionMatrix() = 0;
+
+	virtual void MouseRotate(float xoffset, float yoffset, GLboolean constrainPitch = true) = 0;
+	virtual void Zoom(float yoffset) = 0;
+};
+
+class FirstPersonCamera : public Camera {
 
 private:
 	glm::mat4 m_ViewMatrix;
@@ -40,7 +63,7 @@ public:
 	float near;
 	float far;
 
-	
+
 
 	float Yaw;
 	float Pitch;
@@ -50,7 +73,7 @@ public:
 	float pZoom;
 
 
-	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
+	FirstPersonCamera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
 		: Front(glm::vec3(0.0f, 0.0f, -1.0f))
 		, pMovementSpeed(SPEED)
 		, pMouseSensitivity(SENSITIVTY)
@@ -62,7 +85,7 @@ public:
 		updateCameraVectors();
 	}
 
-	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
+	FirstPersonCamera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
 		: Front(glm::vec3(0.0f, 0.0f, -1.0f))
 		, pMovementSpeed(SPEED)
 		, pMouseSensitivity(SENSITIVTY)
@@ -84,6 +107,82 @@ public:
 
 	//void lookAt(glm::vec3 pos);
 
-	private:
+private:
+	void updateCameraVectors();
+};
+
+class ThirdPersonCamera : public Camera {
+
+private:
+	glm::mat4 m_ViewMatrix;
+
+public:
+	glm::vec3 Position;
+	glm::vec3 Front;
+	glm::vec3 Up;
+	glm::vec3 Right;
+	glm::vec3 WorldUp;
+
+	float fov;
+	float aspectRatio;
+	float near;
+	float far;
+
+	float minDist = 0.5f;
+	float maxDist = 20.f;
+
+	float Yaw;
+	float Pitch;
+
+	float pMovementSpeed;
+	float pMouseSensitivity;
+	float pZoom;
+
+
+	ThirdPersonCamera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
+		float yaw = YAW,
+		float pitch = PITCH,
+		float dist = 1.f)
+		: Front(glm::vec3(0.0f, 0.0f, -1.0f))
+		, pMovementSpeed(SPEED)
+		, pMouseSensitivity(SENSITIVTY)
+		, pZoom(dist) {
+		Position = position;
+		WorldUp = up;
+		Yaw = yaw;
+		Pitch = pitch;
+		updateCameraVectors();
+	}
+
+	ThirdPersonCamera(float posX,
+		float posY,
+		float posZ,
+		float upX,
+		float upY,
+		float upZ,
+		float yaw,
+		float pitch,
+		float dist = 1.f)
+		: Front(glm::vec3(0.0f, 0.0f, -1.0f))
+		, pMovementSpeed(SPEED)
+		, pMouseSensitivity(SENSITIVTY)
+		, pZoom(dist) {
+		Position = glm::vec3(posX, posY, posZ);
+		WorldUp = glm::vec3(upX, upY, upZ);
+		Yaw = yaw;
+		Pitch = pitch;
+		updateCameraVectors();
+	}
+
+
+	glm::mat4 GetViewMatrix();
+	glm::mat4 GetProjectionMatrix();
+
+	void setPosition(glm::vec3 center);
+	void MouseRotate(float xoffset, float yoffset, GLboolean constrainPitch = true);
+	void Zoom(float yoffset);
+
+private:
 	void updateCameraVectors();
 };

@@ -34,7 +34,7 @@ void PhongMaterial::loadLight(PointLight light) {
 	m_light = light;
 }
 
-void PhongMaterial::loadCamera(Camera cam) {
+void PhongMaterial::loadCamera(Camera& cam) {
 	m_shader.Bind();
 	m_shader.setUniformMat4f("u_ViewMatrix", cam.GetViewMatrix(), false);
 	m_shader.setUniformMat4f("u_ProjectionMatrix", cam.GetProjectionMatrix(), false);
@@ -83,7 +83,7 @@ void ProjectiveTexturingMaterial::Update() {
 	Unbind();
 }
 
-void ProjectiveTexturingMaterial::loadCamera(Camera cam) {
+void ProjectiveTexturingMaterial::loadCamera(Camera& cam) {
 	m_shader.Bind();
 	m_shader.setUniformMat4f("u_ViewMatrix", cam.GetViewMatrix(), false);
 	m_shader.setUniformMat4f("u_ProjectionMatrix", cam.GetProjectionMatrix(), false);

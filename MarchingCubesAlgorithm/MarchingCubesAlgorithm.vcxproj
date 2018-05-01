@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
+    <None Include="res\shaders\Basic3D.shader" />
     <None Include="res\shaders\phong_old.shader" />
     <None Include="res\shaders\projectiveTexturing.shader" />
     <None Include="res\shaders\Random.shader" />
@@ -178,6 +179,8 @@
       <AdditionalIncludeDirectories>C:\Users\LasseHuber\Documents\Visual Studio 2017\Projects\OpenGLRenderer\Dependencies\stb_image;C:\Users\LasseHuber\Documents\Visual Studio 2017\Projects\OpenGLRenderer\Dependencies\glm;C:\Users\LasseHuber\Documents\Visual Studio 2017\Projects\OpenGLRenderer\Dependencies\GLFW\include;C:\Users\LasseHuber\Documents\Visual Studio 2017\Projects\OpenGLRenderer\Dependencies\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

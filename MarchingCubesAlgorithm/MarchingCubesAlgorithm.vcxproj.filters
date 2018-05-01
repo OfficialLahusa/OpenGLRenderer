@@ -23,11 +23,9 @@
     <None Include="res\shaders\projectiveTexturing.shader" />
     <None Include="res\shaders\skybox.shader" />
     <None Include="res\shaders\reflect.shader" />
+    <None Include="res\shaders\Basic3D.shader" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\Camera.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Clock.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -73,9 +71,11 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Camera.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\Camera.h" />
     <ClInclude Include="Engine\Clock.h" />
     <ClInclude Include="Engine\Cubemap.h" />
     <ClInclude Include="Engine\IndexBuffer.h" />
@@ -91,6 +91,7 @@
     <ClInclude Include="Engine\VertexArray.h" />
     <ClInclude Include="Engine\VertexBuffer.h" />
     <ClInclude Include="Engine\VertexBufferLayout.h" />
+    <ClInclude Include="Engine\Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\cGrid.png">

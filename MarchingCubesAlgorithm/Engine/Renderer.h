@@ -32,11 +32,18 @@ GLFWwindow* InitializeOpenGL(bool fullscreen);
 
 class Renderer {
 private:
-
+	Shader LineShader;
 public:
+	Renderer() : LineShader("res/shaders/Basic3D.shader") {
+		GLfloat LineRange[2];
+		glGetFloatv(GL_LINE_WIDTH_RANGE, LineRange);
+		std::cout << "Line Width - Min: " << LineRange[0] << ", ";
+		std::cout << "Max: " << LineRange[1] << "\n";
+	};
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
 	void Draw(Mesh& obj, Material& mat);
 	void Draw(Skybox& skybox, glm::mat4 projection, glm::mat4 view);
+	void DrawLine(glm::vec3 pos1, glm::vec3 pos2, glm::vec3 color, Camera& cam, float width); //Check Constructor Output for Min/Max thickness
 	void Clear();
 	glm::ivec2 getWindowSize(GLFWwindow* window);
 };

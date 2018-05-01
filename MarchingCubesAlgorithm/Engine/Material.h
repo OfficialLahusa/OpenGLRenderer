@@ -39,7 +39,7 @@ public:
 	Texture* m_tex;
 
 	void loadLight(PointLight light);
-	void loadCamera(Camera cam);
+	void loadCamera(Camera& cam);
 	void loadModel(glm::mat4 model);
 	void setTexture(Texture& tex);
 
@@ -83,7 +83,7 @@ public:
 
 	Texture* m_tex;
 
-	void loadCamera(Camera cam);
+	void loadCamera(Camera& cam);
 	void loadModel(glm::mat4 model);
 	void setTexture(Texture& tex);
 

@@ -37,6 +37,9 @@ int main(void) {
 	{
 		InputManager inputManager(window);
 		inputManager.setCursorVisible(false);
+		
+
+		
 
 		ObjLoader objLoader;
 
@@ -66,7 +69,9 @@ int main(void) {
 
 		Renderer renderer;
 
-		Camera cam(glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
+		glm::vec3 camCenter = { 0,0,0 };
+		ThirdPersonCamera cam(camCenter, {0,1,0});
+		//FirstPersonCamera cam({ 5,5,5 }, { 0,1,0 });
 		cam.fov = 80.f;
 		cam.aspectRatio = (float)renderer.getWindowSize(window).x / (float)renderer.getWindowSize(window).y;
 		cam.near = 0.1f;
@@ -74,6 +79,7 @@ int main(void) {
 
 		Clock deltaClock;
 		Clock runtimeClock;
+		Clock titleUpdateClock;
 		float deltaTime = 0.f;
 
 		PointLight light({ 0.f, 0.f, 0.f }, { 1.f, 1.f, 1.f });
@@ -92,9 +98,15 @@ int main(void) {
 		while (!glfwWindowShouldClose(window)) {
 			deltaTime = deltaClock.reset();
 
-			std::string title = "Marching Cubes Algorithm Tech Demo, FPS: " + std::to_string((int)(1 / deltaTime));
-			glfwSetWindowTitle(window, title.c_str());
-
+			if(titleUpdateClock.getElapsedTime() >= .75f) {
+				std::string title = "Marching Cubes Algorithm Tech Demo, FPS: " 
+					+ std::to_string((int)(1 / deltaTime))
+					+ "  Cam(" + std::to_string((int)cam.Position.x)
+					+ "|" + std::to_string((int)cam.Position.y)
+					+ "|" + std::to_string((int)cam.Position.z) + ")";
+				glfwSetWindowTitle(window, title.c_str());
+				titleUpdateClock.reset();
+			}
 
 			glClearColor(0.f, 0.f, 0.1f, 1.f);
 			renderer.Clear();
@@ -106,11 +118,19 @@ int main(void) {
 			oldPhong.setUniform3f("u_CamPos", cam.Position);
 
 			view = cam.GetViewMatrix();
+				
 			cam.MouseRotate(inputManager.getMouseOffset().x * 0.12f, inputManager.getMouseOffset().y * 0.12f);
 			projection = cam.GetProjectionMatrix();
 
 			boxModel.setPosition(light.getPosition());
 
+			renderer.DrawLine({ 0.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, cam, 3);
+			renderer.DrawLine({ 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f }, { 0.f, 1.f, 0.f }, cam, 3);
+			renderer.DrawLine({ 0.f, 0.f, 0.f }, { 0.f, 0.f, 1.f }, { 0.f, 0.f, 1.f }, cam, 3);
+			/*renderer.DrawLine({0, 0, 0},
+				cam.lookAt({0,0,0}) - glm::vec3(0,1,0),
+				{ 0.f, 1.f, 1.f },
+				cam, 3);*/
 			renderer.Draw(skybox, projection, view);
 
 			/* Swap front and back buffers */
@@ -119,18 +139,14 @@ int main(void) {
 			/* Poll for and process events */
 			glfwPollEvents();
 
+
+			//Keyboard Events
 			if (inputManager.KeyDown(GLFW_KEY_ESCAPE)) {
 				goto deleteWindow;
 			}
-
-			if (inputManager.KeyDown(GLFW_KEY_W))
-				cam.Translate(Camera_Movement::FORWARD, deltaTime);
-			if (inputManager.KeyDown(GLFW_KEY_S))
-				cam.Translate(Camera_Movement::BACKWARD, deltaTime);
-			if (inputManager.KeyDown(GLFW_KEY_A))
-				cam.Translate(Camera_Movement::LEFT, deltaTime);
-			if (inputManager.KeyDown(GLFW_KEY_D))
-				cam.Translate(Camera_Movement::RIGHT, deltaTime);
+			
+			if (inputManager.KeyDown(GLFW_KEY_KP_ADD)) cam.Zoom(2 * deltaTime);
+			else if (inputManager.KeyDown(GLFW_KEY_KP_SUBTRACT)) cam.Zoom(-2 * deltaTime);
 		}
 
 	}

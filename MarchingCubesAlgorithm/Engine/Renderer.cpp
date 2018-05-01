@@ -103,6 +103,38 @@ void Renderer::Draw(Skybox & skybox, glm::mat4 projection, glm::mat4 view) {
 	GLCall(glDepthMask(GL_TRUE));
 }
 
+void Renderer::DrawLine(glm::vec3 pos1, glm::vec3 pos2, glm::vec3 color, Camera& cam, float width) {
+	glm::mat4 view = cam.GetViewMatrix(), projection = cam.GetProjectionMatrix();
+	LineShader.Bind();
+	LineShader.setUniform4f("u_Color", glm::vec4(color.r, color.g, color.b, 1.f));
+	LineShader.setUniformMat4f("u_ViewMatrix", view, false);
+	LineShader.setUniformMat4f("u_ProjectionMatrix", projection, false);
+	
+	float data[6]{
+		pos1.x, pos1.y, pos1.z,
+		pos2.x, pos2.y, pos2.z
+	};
+	unsigned int indices[2]{
+		0, 1
+	};
+
+	VertexBuffer buf;
+	buf.load(&data, 6 * sizeof(float));
+	VertexBufferLayout layout;
+	layout.Push<float>(3);
+	VertexArray va;
+	va.AddBuffer(buf, layout);
+	IndexBuffer ib(indices, 2 * sizeof(unsigned int));
+	va.Bind();
+	ib.Bind();
+	glLineWidth(width);
+	GLCall(glDrawElements(GL_LINES, ib.GetCount() - 1 * sizeof(float), GL_UNSIGNED_INT, nullptr)); //-3 is needed to work somehow
+	glDrawArrays(GL_LINES, 0, 2);
+	glLineWidth(1);
+	va.Unbind();
+	ib.Unbind();
+}
+
 void Renderer::Clear() {
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
