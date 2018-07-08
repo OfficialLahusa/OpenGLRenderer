@@ -98,6 +98,36 @@ public:
 	void Unbind() override;
 };
 
+class RefractMaterial : public Material {
+private:
+
+
+public:
+	RefractMaterial(PointLight& light, Camera& cam, Texture& tex, Cubemap* sb);
+	~RefractMaterial();
+
+	void Update() override;
+
+	Texture* tex;
+	Cubemap* cubemap;
+
+	Shader shader;
+	PointLight& light;
+	Camera& cam;
+	glm::mat4 model;
+
+	float ambientIntensity = 0.2f;
+	float diffuseIntensity = 0.8f;
+	float specularIntensity = 0.5f;
+	float reflectivity = 0.5f;
+
+	float IOR = 1.f / 1.52f;
+
+
+	void Bind() override;
+	void Unbind() override;
+};
+
 class LightCubeMaterial : public Material {
 private:
 

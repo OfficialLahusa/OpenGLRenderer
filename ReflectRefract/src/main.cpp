@@ -77,7 +77,8 @@ int main(void) {
 
 		TransformableMatrix boxModel(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.f, 0.f, 0.f));
 		TransformableMatrix testModel (glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
-		TransformableMatrix sphereModel(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
+		TransformableMatrix sphereReflectModel(glm::vec3(-1.5f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
+		TransformableMatrix sphereRefractModel(glm::vec3(1.5f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
 
 		
 
@@ -99,6 +100,8 @@ int main(void) {
 
 		PhongMaterial phongMat(light, cam, grid);
 		ReflectMaterial reflectMat(light, cam, grid, &skyboxTex);
+		RefractMaterial refractMat(light, cam, grid, &skyboxTex);
+		refractMat.IOR = 1.f / 1.52f;
 		SphereDissolveMat sphereMat(glm::vec3(1, 1, 1), cam, grid);
 		LightCubeMaterial lightCubeMat(cam);
 
@@ -155,11 +158,19 @@ int main(void) {
 
 			reflectMat.tex = &brick;
 			reflectMat.Bind();
-			reflectMat.model = sphereModel.getMatrix();
+			reflectMat.model = sphereReflectModel.getMatrix();
 			reflectMat.cam = cam;
 			reflectMat.light = light;
 			reflectMat.Update();
 			renderer.Draw(sphere, reflectMat);
+
+			refractMat.tex = &brick;
+			refractMat.Bind();
+			refractMat.model = sphereRefractModel.getMatrix();
+			refractMat.cam = cam;
+			refractMat.light = light;
+			refractMat.Update();
+			renderer.Draw(sphere, refractMat);
 
 			view = cam.GetViewMatrix();
 				

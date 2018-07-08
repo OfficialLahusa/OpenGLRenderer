@@ -99,6 +99,45 @@ void ReflectMaterial::Unbind() {
 	tex->Unbind();
 }
 
+RefractMaterial::RefractMaterial(PointLight& light, Camera& cam, Texture& tex, Cubemap* cm)
+	: shader("res/shaders/refract.shader")
+	, light(light)
+	, cam(cam)
+	, tex(&tex)
+	, cubemap(cm)
+{
+
+}
+
+RefractMaterial::~RefractMaterial() {
+
+}
+
+void RefractMaterial::Update() {
+	Bind();
+	//shader.setUniform1i("u_Tex", 0);
+	shader.setUniform1i("u_SkyboxTex", 0);
+	shader.setUniform1f("u_IOR", IOR);
+	//shader.setUniform3f("u_LightPos", light.getPosition());
+	//shader.setUniform3f("u_SpecularColor", light.getColor());
+	shader.setUniformMat4f("u_ViewMatrix", cam.GetViewMatrix(), false);
+	shader.setUniformMat4f("u_ProjectionMatrix", cam.GetProjectionMatrix(), false);
+	shader.setUniformMat4f("u_ModelMatrix", model, false);
+	shader.setUniform3f("u_CamPos", cam.Position);
+}
+
+void RefractMaterial::Bind() {
+	tex->Bind(0);
+	cubemap->Bind(0);
+	shader.Bind();
+}
+
+void RefractMaterial::Unbind() {
+	shader.Unbind();
+	cubemap->Unbind();
+	tex->Unbind();
+}
+
 SphereDissolveMat::SphereDissolveMat(glm::vec3 light, Camera& cam, Texture& tex)
 	: m_shader("res/shaders/dissolve.shader")
 	, m_light(light)

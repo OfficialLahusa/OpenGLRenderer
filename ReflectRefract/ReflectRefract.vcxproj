@@ -44,6 +44,7 @@
     <None Include="res\shaders\projectiveTexturing.shader" />
     <None Include="res\shaders\Random.shader" />
     <None Include="res\shaders\reflect.shader" />
+    <None Include="res\shaders\refract.shader" />
     <None Include="res\shaders\skybox.shader" />
     <None Include="res\shaders\solidColor3D.shader" />
     <None Include="res\shaders\textured.shader" />

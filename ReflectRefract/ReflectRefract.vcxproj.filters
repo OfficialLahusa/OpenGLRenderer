@@ -26,6 +26,7 @@
     <None Include="res\shaders\Basic3D.shader" />
     <None Include="res\shaders\dissolve.shader" />
     <None Include="res\shaders\solidColor3D.shader" />
+    <None Include="res\shaders\refract.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Clock.cpp">

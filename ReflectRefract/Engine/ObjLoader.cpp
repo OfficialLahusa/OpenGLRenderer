@@ -130,7 +130,7 @@ void ObjLoader::loadObj(fMeshData& outData, const std::string & filepath) {
 			//Vertex Normal
 			finalMeshData.push_back(m_normals[vert.z - 1].x);
 			finalMeshData.push_back(m_normals[vert.z - 1].y);
-			finalMeshData.push_back(m_normals[vert.z - 1].y);
+			finalMeshData.push_back(m_normals[vert.z - 1].z);
 
 			//std::cout << "Normal Done" << "\n";
 			//Vertex Texture Coordinates

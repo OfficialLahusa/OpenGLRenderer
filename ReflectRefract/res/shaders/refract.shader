@@ -27,12 +27,13 @@ out vec4 FragColor;
 in vec3 Normal;
 in vec3 Position;
 
+uniform float u_IOR;
 uniform samplerCube u_SkyboxTex;
 uniform vec3 u_CamPos;
 
 void main() {
 
 	vec3 camOffset = normalize(Position - u_CamPos);
-	vec3 reflectVector = reflect(camOffset, normalize(Normal));
+	vec3 reflectVector = refract(camOffset, normalize(Normal), u_IOR);
 	FragColor = texture(u_SkyboxTex, reflectVector);
 }
