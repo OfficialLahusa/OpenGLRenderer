@@ -7,10 +7,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenGLRenderer", "OpenGLRen
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MarchingCubesAlgorithm", "MarchingCubesAlgorithm\MarchingCubesAlgorithm.vcxproj", "{C7F2B033-76DB-4817-AB52-653A4BEF2AA8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SphereDissolve", "SphereDissolve\SphereDissolve.vcxproj", "{078F57BB-682A-4021-AC49-27C3B8EF0488}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReflectRefract", "ReflectRefract\ReflectRefract.vcxproj", "{91573138-5D88-4774-823F-B6F317D0466E}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
@@ -34,9 +35,31 @@ Global
 		{C7F2B033-76DB-4817-AB52-653A4BEF2AA8}.Release|x64.Build.0 = Release|x64
 		{C7F2B033-76DB-4817-AB52-653A4BEF2AA8}.Release|x86.ActiveCfg = Release|Win32
 		{C7F2B033-76DB-4817-AB52-653A4BEF2AA8}.Release|x86.Build.0 = Release|Win32
+		{078F57BB-682A-4021-AC49-27C3B8EF0488}.Debug|x64.ActiveCfg = Debug|x64
+		{078F57BB-682A-4021-AC49-27C3B8EF0488}.Debug|x64.Build.0 = Debug|x64
+		{078F57BB-682A-4021-AC49-27C3B8EF0488}.Debug|x86.ActiveCfg = Debug|Win32
+		{078F57BB-682A-4021-AC49-27C3B8EF0488}.Debug|x86.Build.0 = Debug|Win32
+		{078F57BB-682A-4021-AC49-27C3B8EF0488}.Release|x64.ActiveCfg = Release|x64
+		{078F57BB-682A-4021-AC49-27C3B8EF0488}.Release|x64.Build.0 = Release|x64
+		{078F57BB-682A-4021-AC49-27C3B8EF0488}.Release|x86.ActiveCfg = Release|Win32
+		{078F57BB-682A-4021-AC49-27C3B8EF0488}.Release|x86.Build.0 = Release|Win32
+		{91573138-5D88-4774-823F-B6F317D0466E}.Debug|x64.ActiveCfg = Debug|x64
+		{91573138-5D88-4774-823F-B6F317D0466E}.Debug|x64.Build.0 = Debug|x64
+		{91573138-5D88-4774-823F-B6F317D0466E}.Debug|x86.ActiveCfg = Debug|Win32
+		{91573138-5D88-4774-823F-B6F317D0466E}.Debug|x86.Build.0 = Debug|Win32
+		{91573138-5D88-4774-823F-B6F317D0466E}.Release|x64.ActiveCfg = Release|x64
+		{91573138-5D88-4774-823F-B6F317D0466E}.Release|x64.Build.0 = Release|x64
+		{91573138-5D88-4774-823F-B6F317D0466E}.Release|x86.ActiveCfg = Release|Win32
+		{91573138-5D88-4774-823F-B6F317D0466E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F1813664-FDA5-48C3-89E4-356287BE71DB}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true

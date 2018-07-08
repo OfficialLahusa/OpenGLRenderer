@@ -37,9 +37,8 @@ int main(void) {
 	{
 		InputManager inputManager(window);
 		inputManager.setCursorVisible(false);
-		
 
-		
+		Renderer renderer;
 
 		ObjLoader objLoader;
 
@@ -67,7 +66,7 @@ int main(void) {
 		TransformableMatrix boxModel(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.f, 0.f, 0.f));
 		TransformableMatrix testModel (glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
 
-		Renderer renderer;
+		
 
 		glm::vec3 camCenter = { 0,0,0 };
 		ThirdPersonCamera cam(camCenter, {0,1,0});
@@ -99,7 +98,7 @@ int main(void) {
 			deltaTime = deltaClock.reset();
 
 			if(titleUpdateClock.getElapsedTime() >= .75f) {
-				std::string title = "Marching Cubes Algorithm Tech Demo, FPS: " 
+				std::string title = "Marching Cubes Algorithm Tech Demo, FPS: "
 					+ std::to_string((int)(1 / deltaTime))
 					+ "  Cam(" + std::to_string((int)cam.Position.x)
 					+ "|" + std::to_string((int)cam.Position.y)
@@ -127,10 +126,7 @@ int main(void) {
 			renderer.DrawLine({ 0.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, cam, 3);
 			renderer.DrawLine({ 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f }, { 0.f, 1.f, 0.f }, cam, 3);
 			renderer.DrawLine({ 0.f, 0.f, 0.f }, { 0.f, 0.f, 1.f }, { 0.f, 0.f, 1.f }, cam, 3);
-			/*renderer.DrawLine({0, 0, 0},
-				cam.lookAt({0,0,0}) - glm::vec3(0,1,0),
-				{ 0.f, 1.f, 1.f },
-				cam, 3);*/
+
 			renderer.Draw(skybox, projection, view);
 
 			/* Swap front and back buffers */
@@ -145,8 +141,6 @@ int main(void) {
 				goto deleteWindow;
 			}
 			
-			if (inputManager.KeyDown(GLFW_KEY_KP_ADD)) cam.Zoom(2 * deltaTime);
-			else if (inputManager.KeyDown(GLFW_KEY_KP_SUBTRACT)) cam.Zoom(-2 * deltaTime);
 		}
 
 	}

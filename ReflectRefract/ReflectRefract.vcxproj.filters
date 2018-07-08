@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\Basic.shader">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="res\shaders\Random.shader">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="res\shaders\vertexColor.shader" />
+    <None Include="res\shaders\textured.shader" />
+    <None Include="res\shaders\phong_old.shader" />
+    <None Include="res\shaders\projectiveTexturing.shader" />
+    <None Include="res\shaders\skybox.shader" />
+    <None Include="res\shaders\reflect.shader" />
+    <None Include="res\shaders\Basic3D.shader" />
+    <None Include="res\shaders\dissolve.shader" />
+    <None Include="res\shaders\solidColor3D.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Engine\Clock.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Cubemap.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\IndexBuffer.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\InputManager.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Light.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Material.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ObjLoader.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Shader.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Skybox.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Texture.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\TransformableMatrix.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\VertexArray.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\VertexBuffer.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Camera.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\imgui\imgui.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\imgui\imgui_demo.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\imgui\imgui_draw.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\imgui\imgui_impl_glfw_gl3.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine\Clock.h" />
+    <ClInclude Include="Engine\Cubemap.h" />
+    <ClInclude Include="Engine\IndexBuffer.h" />
+    <ClInclude Include="Engine\InputManager.h" />
+    <ClInclude Include="Engine\Light.h" />
+    <ClInclude Include="Engine\Material.h" />
+    <ClInclude Include="Engine\ObjLoader.h" />
+    <ClInclude Include="Engine\Renderer.h" />
+    <ClInclude Include="Engine\Shader.h" />
+    <ClInclude Include="Engine\Skybox.h" />
+    <ClInclude Include="Engine\Texture.h" />
+    <ClInclude Include="Engine\TransformableMatrix.h" />
+    <ClInclude Include="Engine\VertexArray.h" />
+    <ClInclude Include="Engine\VertexBuffer.h" />
+    <ClInclude Include="Engine\VertexBufferLayout.h" />
+    <ClInclude Include="Engine\Camera.h" />
+    <ClInclude Include="Engine\imgui\imconfig.h" />
+    <ClInclude Include="Engine\imgui\imgui.h" />
+    <ClInclude Include="Engine\imgui\imgui_impl_glfw_gl3.h" />
+    <ClInclude Include="Engine\imgui\imgui_internal.h" />
+    <ClInclude Include="Engine\imgui\stb_rect_pack.h" />
+    <ClInclude Include="Engine\imgui\stb_textedit.h" />
+    <ClInclude Include="Engine\imgui\stb_truetype.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\textures\cGrid.png">
+      <Filter>Ressourcendateien</Filter>
+    </Image>
+    <Image Include="res\textures\brick.jpg">
+      <Filter>Ressourcendateien</Filter>
+    </Image>
+    <Image Include="res\textures\noise.png">
+      <Filter>Ressourcendateien</Filter>
+    </Image>
+    <Image Include="res\textures\white.png">
+      <Filter>Ressourcendateien</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
