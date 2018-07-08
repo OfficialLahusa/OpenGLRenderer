@@ -1,20 +1,44 @@
 #include "Camera.h"
 #include <iostream>
+#include <glm/gtx/matrix_decompose.hpp>
 
-glm::mat4 FirstPersonCamera::GetViewMatrix() {
+DecomposedModelMatrix Camera::DecomposeModelMatrix(glm::mat4 matrix)
+{
+	DecomposedModelMatrix result;	// Output struct with all our important information, rotation is a vec3 instead of a Quaternion
+	glm::quat untreatedRotation;	// Temporary storage for the Quaternion returned by glm::decompose()
+
+	glm::decompose(matrix, result.scale, untreatedRotation, result.location, result.skew, result.perspective);
+
+	result.rotation = glm::eulerAngles(untreatedRotation);	// Converting the temporary Quaternion into euler angles and storing them inside the result struct
+
+	return result;
+}
+
+glm::vec3 Camera::EulerAnglesToDirectionVector(glm::vec3 angles)
+{
+	glm::vec3 direction;
+	// Applying default formula for conversion
+	direction.x = cos(glm::radians(angles.z)) * cos(glm::radians(angles.y));
+	direction.y = sin(glm::radians(angles.y));
+	direction.z = sin(glm::radians(angles.z)) * cos(glm::radians(angles.y));
+	return direction;
+}
+
+glm::mat4 Camera::GetViewMatrix() {
 	return glm::lookAt(Position, Position + Front, Up);
 }
 
-glm::mat4 FirstPersonCamera::GetProjectionMatrix() {
+glm::mat4 Camera::GetProjectionMatrix() {
 	return glm::perspective(glm::radians(fov), aspectRatio, near, far);
 }
 
-inline glm::vec3 FirstPersonCamera::getPosition() const
+void Camera::lookAt(glm::vec3 point)
 {
-	return Position;
+	DecomposedModelMatrix transform = DecomposeModelMatrix(glm::lookAt(Position, point, Up));
+	RollPitchYaw = transform.rotation;
 }
 
-void FirstPersonCamera::Translate(Camera_Movement direction, float deltaTime) {
+/*void Camera::Translate(Camera_Movement direction, float deltaTime) {
 	float velocity = pMovementSpeed * deltaTime;
 	if (direction == FORWARD)
 		Position += Front * velocity;
@@ -28,24 +52,25 @@ void FirstPersonCamera::Translate(Camera_Movement direction, float deltaTime) {
 		Position -= Up * velocity;
 	if (direction == UP)
 		Position += Up * velocity;
-}
+}*/
 
-void FirstPersonCamera::MouseRotate(float xoff, float yoff, GLboolean constrainPitch) {
+void Camera::MouseRotate(float xoff, float yoff, GLboolean constrainPitch) {
 
-	Yaw += xoff;
-	Pitch += yoff;
+	RollPitchYaw.z += xoff;
+	RollPitchYaw.y += yoff;
 
 	// Make sure that when pitch is out of bounds, screen doesn't get flipped
 	if (constrainPitch) {
-		if (Pitch > 89.0f)
-			Pitch = 89.0f;
-		if (Pitch < -89.0f)
-			Pitch = -89.0f;
+		if (RollPitchYaw.y > 89.0f)
+			RollPitchYaw.y = 89.0f;
+		if (RollPitchYaw.y < -89.0f)
+			RollPitchYaw.y = -89.0f;
 	}
 	updateCameraVectors();
+	
 }
 
-void FirstPersonCamera::Zoom(float yoffset) {
+void Camera::Zoom(float yoffset) {
 	if (pZoom >= 1.0f && pZoom <= 45.0f)
 		pZoom -= yoffset;
 	if (pZoom <= 1.0f)
@@ -54,73 +79,14 @@ void FirstPersonCamera::Zoom(float yoffset) {
 		pZoom = 45.0f;
 }
 
-void FirstPersonCamera::updateCameraVectors() {
-	// Calculate the new Front vector
-	glm::vec3 front;
-	front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	front.y = sin(glm::radians(Pitch));
-	front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	Front = glm::normalize(front);
-	// Also re-calculate the Right and Up vector
-	Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-	Up = glm::normalize(glm::cross(Right, Front));
+void Camera::Translate(glm::vec3 amount) {
+	Position += amount;
 }
 
-//------------------------------------------------------
+void Camera::updateCameraVectors() {
 
-glm::mat4 ThirdPersonCamera::GetViewMatrix() {
-	return glm::lookAt(Center - pZoom * Front, Center, Up);
-}
-
-glm::mat4 ThirdPersonCamera::GetProjectionMatrix() {
-	return glm::perspective(glm::radians(fov), aspectRatio, near, far);
-}
-
-inline void ThirdPersonCamera::setCenter(glm::vec3 center) {
-	Center = center;
-}
-
-inline glm::vec3 ThirdPersonCamera::getCenter() {
-	return Center;
-}
-
-inline glm::vec3 ThirdPersonCamera::getPosition() const {
-	return Center - pZoom * Front;
-}
-
-void ThirdPersonCamera::MouseRotate(float xoff, float yoff, GLboolean constrainPitch) {
-
-	Yaw += xoff;
-	Pitch += yoff;
-
-	// Make sure that when pitch is out of bounds, screen doesn't get flipped
-	if (constrainPitch) {
-		if (Pitch > 89.0f)
-			Pitch = 89.0f;
-		if (Pitch < -89.0f)
-			Pitch = -89.0f;
-	}
-	updateCameraVectors();
-}
-
-void ThirdPersonCamera::Zoom(float yoffset) {
-	if (pZoom >= 1.0f && pZoom <= 45.0f)
-		pZoom -= yoffset;
-	if (pZoom <= 1.0f)
-		pZoom = 1.0f;
-	if (pZoom >= 45.0f)
-		pZoom = 45.0f;
-}
-
-
-void ThirdPersonCamera::updateCameraVectors() {
-	// Calculate the new Front vector
-	glm::vec3 front;
-	front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	front.y = sin(glm::radians(Pitch));
-	front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	Front = glm::normalize(front);
-	// Also re-calculate the Right and Up vector
-	Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	// Set and normalize internal vectors for later usage
+	Front = glm::normalize(EulerAnglesToDirectionVector(RollPitchYaw));
+	Right = glm::normalize(glm::cross(Front, WorldUp));
 	Up = glm::normalize(glm::cross(Right, Front));
 }

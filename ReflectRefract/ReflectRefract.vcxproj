@@ -22,10 +22,6 @@
     <ClCompile Include="Engine\Camera.cpp" />
     <ClCompile Include="Engine\Clock.cpp" />
     <ClCompile Include="Engine\Cubemap.cpp" />
-    <ClCompile Include="Engine\imgui\imgui.cpp" />
-    <ClCompile Include="Engine\imgui\imgui_demo.cpp" />
-    <ClCompile Include="Engine\imgui\imgui_draw.cpp" />
-    <ClCompile Include="Engine\imgui\imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="Engine\IndexBuffer.cpp" />
     <ClCompile Include="Engine\InputManager.cpp" />
     <ClCompile Include="Engine\Light.cpp" />
@@ -57,13 +53,6 @@
     <ClInclude Include="Engine\Camera.h" />
     <ClInclude Include="Engine\Clock.h" />
     <ClInclude Include="Engine\Cubemap.h" />
-    <ClInclude Include="Engine\imgui\imconfig.h" />
-    <ClInclude Include="Engine\imgui\imgui.h" />
-    <ClInclude Include="Engine\imgui\imgui_impl_glfw_gl3.h" />
-    <ClInclude Include="Engine\imgui\imgui_internal.h" />
-    <ClInclude Include="Engine\imgui\stb_rect_pack.h" />
-    <ClInclude Include="Engine\imgui\stb_textedit.h" />
-    <ClInclude Include="Engine\imgui\stb_truetype.h" />
     <ClInclude Include="Engine\IndexBuffer.h" />
     <ClInclude Include="Engine\InputManager.h" />
     <ClInclude Include="Engine\Light.h" />

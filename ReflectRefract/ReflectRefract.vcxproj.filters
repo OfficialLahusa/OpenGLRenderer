@@ -76,18 +76,6 @@
     <ClCompile Include="Engine\Camera.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\imgui\imgui.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\imgui\imgui_demo.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\imgui\imgui_draw.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\imgui\imgui_impl_glfw_gl3.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Clock.h" />
@@ -106,13 +94,6 @@
     <ClInclude Include="Engine\VertexBuffer.h" />
     <ClInclude Include="Engine\VertexBufferLayout.h" />
     <ClInclude Include="Engine\Camera.h" />
-    <ClInclude Include="Engine\imgui\imconfig.h" />
-    <ClInclude Include="Engine\imgui\imgui.h" />
-    <ClInclude Include="Engine\imgui\imgui_impl_glfw_gl3.h" />
-    <ClInclude Include="Engine\imgui\imgui_internal.h" />
-    <ClInclude Include="Engine\imgui\stb_rect_pack.h" />
-    <ClInclude Include="Engine\imgui\stb_textedit.h" />
-    <ClInclude Include="Engine\imgui\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\cGrid.png">

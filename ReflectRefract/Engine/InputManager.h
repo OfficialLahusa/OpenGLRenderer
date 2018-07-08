@@ -41,7 +41,7 @@ public:
 
 	glm::vec2 getMouseOffset();
 
-	void changeMouseCallback(bool debug = false);
+	//void changeMouseCallback(bool debug = false);
 
 	void setCursorVisible(bool visible);
 

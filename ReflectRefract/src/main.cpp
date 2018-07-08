@@ -36,16 +36,17 @@ int main(void) {
 
 	{
 		InputManager inputManager(window);
+		inputManager.setCursorVisible(false);
 
 		Renderer renderer;
 
-		ImGui::CreateContext();
+		/*ImGui::CreateContext();
 		ImGui_ImplGlfwGL3_Init(window, true);
-		ImGui::StyleColorsDark();
+		ImGui::StyleColorsDark();*/
 
 		bool uiCursorMode = true;
 		unsigned int uiModeChangeCooldown = 0;
-		inputManager.changeMouseCallback(uiCursorMode);
+		//inputManager.changeMouseCallback(uiCursorMode);
 
 		ObjLoader objLoader;
 
@@ -80,9 +81,9 @@ int main(void) {
 
 		
 
-		glm::vec3 camCenter = { 0,0,0 };
-		ThirdPersonCamera cam(camCenter, {0,1,0}, 0, 0, 3);
-		//FirstPersonCamera cam({ 5,5,5 }, { 0,1,0 });
+		//glm::vec3 camCenter = { 0,0,0 };
+		//ThirdPersonCamera cam(camCenter, {0,1,0}, 0, 0, 3);
+		Camera cam({ 5,5,5 }, { 0,1,0 });
 		cam.fov = 80.f;
 		cam.aspectRatio = (float)renderer.getWindowSize(window).x / (float)renderer.getWindowSize(window).y;
 		cam.near = 0.1f;
@@ -110,27 +111,27 @@ int main(void) {
 			if(titleUpdateClock.getElapsedTime() >= .75f) {
 				std::string title = "Reflections Tech Demo, FPS: "
 					+ std::to_string((int)(1 / deltaTime))
-					+ "  Cam(" + std::to_string((int)cam.getPosition().x)
-					+ "|" + std::to_string((int)cam.getPosition().y)
-					+ "|" + std::to_string((int)cam.getPosition().z) + ")";
+					+ "  Cam(" + std::to_string((int)cam.Position.x)
+					+ "|" + std::to_string((int)cam.Position.y)
+					+ "|" + std::to_string((int)cam.Position.z) + ")";
 				glfwSetWindowTitle(window, title.c_str());
 				titleUpdateClock.reset();
 			}
 
 			glClearColor(0.f, 0.f, 0.1f, 1.f);
 			renderer.Clear();
-			ImGui_ImplGlfwGL3_NewFrame();
+			/*ImGui_ImplGlfwGL3_NewFrame();
 			
 			ImGui::SetNextWindowSize(ImVec2(500, 100));
 			ImGui::Begin("Instruction Window");
 			ImGui::Text("Press [TAB] to switch between Camera- and UI-Mode.");
 			ImGui::Text("\n\n(C) Lasse Huber-Saffer, 2018");
-			ImGui::End();
+			ImGui::End();*/
 
 			light.setPosition({ 2.f * sin(runtimeClock.getElapsedTime()), 0, 2.f * cos(runtimeClock.getElapsedTime()) });
 			oldPhong.Bind();
 			oldPhong.setUniform3f("u_LightPos", light.getPosition());
-			oldPhong.setUniform3f("u_CamPos", cam.getPosition());
+			oldPhong.setUniform3f("u_CamPos", cam.Position);
 
 			boxModel.setPosition(light.getPosition());
 			lightCubeMat.Bind();
@@ -173,8 +174,8 @@ int main(void) {
 
 			renderer.Draw(skybox, projection, view);
 
-			ImGui::Render();
-			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+			/*ImGui::Render();
+			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());*/
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
@@ -183,11 +184,27 @@ int main(void) {
 			//Keyboard Events
 			if (inputManager.KeyDown(GLFW_KEY_ESCAPE)) {
 				goto deleteWindow;
-			} if (inputManager.KeyDown(GLFW_KEY_TAB) && uiModeChangeCooldown == 0) {
+			}
+			if (inputManager.KeyDown(GLFW_KEY_W)) {
+				cam.Translate(cam.Front * 5.f * deltaTime);
+			}
+			if (inputManager.KeyDown(GLFW_KEY_S)) {
+				cam.Translate(cam.Front * -5.f * deltaTime);
+			}
+			if (inputManager.KeyDown(GLFW_KEY_A)) {
+				cam.Translate(cam.Right * -5.f * deltaTime);
+			}
+			if (inputManager.KeyDown(GLFW_KEY_D)) {
+				cam.Translate(cam.Right * 5.f * deltaTime);
+			}
+			if (inputManager.KeyDown(GLFW_KEY_SPACE)) {
+				cam.lookAt(glm::vec3(553, 109, 11));
+			}
+			/*if (inputManager.KeyDown(GLFW_KEY_TAB) && uiModeChangeCooldown == 0) {
 				uiCursorMode = !uiCursorMode;
 				inputManager.changeMouseCallback(uiCursorMode);
 				uiModeChangeCooldown += 30;
-			}
+			}*/
 			
 		}
 
@@ -195,8 +212,8 @@ int main(void) {
 
 deleteWindow:
 
-	ImGui_ImplGlfwGL3_Shutdown();
-	ImGui::DestroyContext();
+	/*ImGui_ImplGlfwGL3_Shutdown();
+	ImGui::DestroyContext();*/
 	glfwTerminate();
 	return 0;
 }

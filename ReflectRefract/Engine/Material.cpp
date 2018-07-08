@@ -24,7 +24,7 @@ void PhongMaterial::Update() {
 	m_shader.setUniformMat4f("u_ViewMatrix", m_cam.GetViewMatrix(), false);
 	m_shader.setUniformMat4f("u_ProjectionMatrix", m_cam.GetProjectionMatrix(), false);
 	m_shader.setUniformMat4f("u_ModelMatrix", m_model, false);
-	m_shader.setUniform3f("u_CamPos", m_cam.getPosition());
+	m_shader.setUniform3f("u_CamPos", m_cam.Position);
 }
 
 void PhongMaterial::loadLight(PointLight light) {
@@ -84,7 +84,7 @@ void ReflectMaterial::Update() {
 	shader.setUniformMat4f("u_ViewMatrix", cam.GetViewMatrix(), false);
 	shader.setUniformMat4f("u_ProjectionMatrix", cam.GetProjectionMatrix(), false);
 	shader.setUniformMat4f("u_ModelMatrix", model, false);
-	shader.setUniform3f("u_CamPos", cam.getPosition());
+	shader.setUniform3f("u_CamPos", cam.Position);
 }
 
 void ReflectMaterial::Bind() {
@@ -126,7 +126,7 @@ void SphereDissolveMat::Update() {
 	m_shader.setUniformMat4f("u_ViewMatrix", m_cam.GetViewMatrix(), false);
 	m_shader.setUniformMat4f("u_ProjectionMatrix", m_cam.GetProjectionMatrix(), false);
 	m_shader.setUniformMat4f("u_ModelMatrix", m_model, false);
-	m_shader.setUniform3f("u_CamPos", m_cam.getPosition());
+	m_shader.setUniform3f("u_CamPos", m_cam.Position);
 }
 
 void SphereDissolveMat::loadLight(glm::vec3 dir) {
@@ -185,7 +185,7 @@ void ProjectiveTexturingMaterial::Update() {
 	m_shader.setUniformMat4f("u_ViewMatrix", m_cam.GetViewMatrix(), false);
 	m_shader.setUniformMat4f("u_ProjectionMatrix", m_cam.GetProjectionMatrix(), false);
 	m_shader.setUniformMat4f("u_ModelMatrix", m_model, false);
-	m_shader.setUniform3f("u_CamPos", m_cam.getPosition());
+	m_shader.setUniform3f("u_CamPos", m_cam.Position);
 	Unbind();
 }
 

@@ -56,7 +56,7 @@ glm::vec2 InputManager::getMouseOffset() {
 	return res;
 }
 
-void InputManager::changeMouseCallback(bool ui)
+/*void InputManager::changeMouseCallback(bool ui)
 {
 	if (ui) {
 		glfwSetCursorPosCallback(m_window, uiMouseCallback);
@@ -72,7 +72,7 @@ void InputManager::changeMouseCallback(bool ui)
 		std::cout << "off\n";
 		return;
 	}
-}
+}*/
 
 void InputManager::setCursorVisible(bool visible) {
 	if (m_window != nullptr)
