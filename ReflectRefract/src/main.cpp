@@ -50,7 +50,7 @@ int main(void) {
 
 		ObjLoader objLoader;
 
-		Mesh sphere("res/models/sphere_smooth.obj");	
+		Mesh sphere("res/models/sphere_smooth.obj");
 		Mesh lightCube("res/models/skybox.obj");
 
 		Shader texturedShader("res/shaders/textured.shader");

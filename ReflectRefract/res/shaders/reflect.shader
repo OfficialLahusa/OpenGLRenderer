@@ -5,25 +5,18 @@ layout(location = 0) in vec3 aPosition;
 layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoord;
 
-out mat4 model;
-out vec3 reflectVector;
-out vec3 color;
-
+out vec3 Normal;
+out vec3 Position;
 
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ProjectionMatrix;
 uniform mat4 u_ModelMatrix;
 
-uniform vec3 u_CamPos;
-
 void main() {
 	gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(aPosition, 1.0);
-	model = u_ModelMatrix;
 
-	vec3 camOffset = aPosition - u_CamPos;
-	reflectVector = reflect(camOffset, aNormal);
-
-	color = vec3(u_CamPos.x, u_CamPos.x, u_CamPos.x);
+	Position = aPosition;
+	Normal = mat3(transpose(inverse(u_ModelMatrix))) * aNormal;
 }
 
 #shader fragment
@@ -31,15 +24,15 @@ void main() {
 #version 330 core
 out vec4 FragColor;
 
-in vec3 reflectVector;
-in vec3 color;
-in mat4 model;
+in vec3 Normal;
+in vec3 Position;
 
 uniform samplerCube u_SkyboxTex;
+uniform vec3 u_CamPos;
 
 void main() {
 
-	//FragColor = texture(u_SkyboxTex, reflectVector);
-	FragColor = vec4(color, 1.f);
-
+	vec3 camOffset = normalize(Position - u_CamPos);
+	vec3 reflectVector = refract(camOffset, normalize(Normal), 1.f / 1.52f);
+	FragColor = texture(u_SkyboxTex, reflectVector);
 }
