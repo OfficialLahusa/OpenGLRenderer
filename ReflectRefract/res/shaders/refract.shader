@@ -27,13 +27,15 @@ out vec4 FragColor;
 in vec3 Normal;
 in vec3 Position;
 
-uniform float u_IOR;
+uniform float u_Eta; //Ratio of IORs (e.g. 1.f/1.33f for air -> water)
 uniform samplerCube u_SkyboxTex;
 uniform vec3 u_CamPos;
 
 void main() {
-
 	vec3 camOffset = normalize(Position - u_CamPos);
-	vec3 reflectVector = refract(camOffset, normalize(Normal), u_IOR);
-	FragColor = texture(u_SkyboxTex, reflectVector);
+	float fresnel = dot(camOffset, Normal);
+	vec3 refractVector = refract(camOffset, normalize(Normal), u_Eta);
+
+	vec4 refractColor = texture(u_SkyboxTex, refractVector);
+	FragColor = mix(vec4(1, 0, 0, 1), refractColor, 1);
 }

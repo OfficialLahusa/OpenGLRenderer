@@ -28,11 +28,13 @@
 
 int main(void) {
 
+	
 	GLFWwindow* window = InitializeOpenGL(FULLSCREEN);
 
 	//GL Settings
 	GLCall(glEnable(GL_DEPTH_TEST));
 	GLCall(glDepthFunc(GL_LEQUAL));
+	GLCall(glEnable(GL_MULTISAMPLE));
 
 	{
 		InputManager inputManager(window);
@@ -50,7 +52,7 @@ int main(void) {
 
 		ObjLoader objLoader;
 
-		Mesh sphere("res/models/sphere_smooth.obj");
+		Mesh sphere("res/models/teapot.obj");
 		Mesh lightCube("res/models/skybox.obj");
 
 		Shader texturedShader("res/shaders/textured.shader");
@@ -77,8 +79,8 @@ int main(void) {
 
 		TransformableMatrix boxModel(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.f, 0.f, 0.f));
 		TransformableMatrix testModel (glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
-		TransformableMatrix sphereReflectModel(glm::vec3(-1.5f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
-		TransformableMatrix sphereRefractModel(glm::vec3(1.5f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.f, 0.f, 0.f));
+		TransformableMatrix sphereReflectModel(glm::vec3(-1.5f, 0.f, 0.f), glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(0.f, 0.f, 0.f));
+		TransformableMatrix sphereRefractModel(glm::vec3(1.5f, 0.f, 0.f), glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(0.f, 0.f, 0.f));
 
 		
 
@@ -101,7 +103,7 @@ int main(void) {
 		PhongMaterial phongMat(light, cam, grid);
 		ReflectMaterial reflectMat(light, cam, grid, &skyboxTex);
 		RefractMaterial refractMat(light, cam, grid, &skyboxTex);
-		refractMat.IOR = 1.f / 1.52f;
+		refractMat.eta = 1.f / 1.33f;
 		SphereDissolveMat sphereMat(glm::vec3(1, 1, 1), cam, grid);
 		LightCubeMaterial lightCubeMat(cam);
 
@@ -114,9 +116,9 @@ int main(void) {
 			if(titleUpdateClock.getElapsedTime() >= .75f) {
 				std::string title = "Reflections Tech Demo, FPS: "
 					+ std::to_string((int)(1 / deltaTime))
-					+ "  Cam(" + std::to_string((int)cam.Position.x)
-					+ "|" + std::to_string((int)cam.Position.y)
-					+ "|" + std::to_string((int)cam.Position.z) + ")";
+					+ "  Cam(" + std::to_string(cam.Position.x)
+					+ "|" + std::to_string(cam.Position.y)
+					+ "|" + std::to_string(cam.Position.z) + ")";
 				glfwSetWindowTitle(window, title.c_str());
 				titleUpdateClock.reset();
 			}
@@ -209,7 +211,7 @@ int main(void) {
 				cam.Translate(cam.Right * 5.f * deltaTime);
 			}
 			if (inputManager.KeyDown(GLFW_KEY_SPACE)) {
-				cam.lookAt(glm::vec3(553, 109, 11));
+				cam.lookAt(boxModel.getPosition());
 			}
 			/*if (inputManager.KeyDown(GLFW_KEY_TAB) && uiModeChangeCooldown == 0) {
 				uiCursorMode = !uiCursorMode;

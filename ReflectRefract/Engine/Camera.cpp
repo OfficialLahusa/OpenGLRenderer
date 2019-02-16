@@ -5,12 +5,12 @@
 DecomposedModelMatrix Camera::DecomposeModelMatrix(glm::mat4 matrix)
 {
 	DecomposedModelMatrix result;	// Output struct with all our important information, rotation is a vec3 instead of a Quaternion
-	glm::quat untreatedRotation;	// Temporary storage for the Quaternion returned by glm::decompose()
+	glm::quat quaternionRotation;	// Temporary storage for the Quaternion returned by glm::decompose()
 
-	glm::decompose(matrix, result.scale, untreatedRotation, result.location, result.skew, result.perspective);
+	glm::decompose(matrix, result.scale, quaternionRotation, result.location, result.skew, result.perspective);
 
-	result.rotation = glm::eulerAngles(untreatedRotation);	// Converting the temporary Quaternion into euler angles and storing them inside the result struct
-
+	result.rotation = glm::eulerAngles(quaternionRotation);	// Converting the temporary Quaternion into euler angles and storing them inside the result struct
+	result.rotation *= 90; //result rotations aren't scaled correctly for some reason
 	return result;
 }
 
@@ -35,7 +35,12 @@ glm::mat4 Camera::GetProjectionMatrix() {
 void Camera::lookAt(glm::vec3 point)
 {
 	DecomposedModelMatrix transform = DecomposeModelMatrix(glm::lookAt(Position, point, Up));
-	RollPitchYaw = transform.rotation;
+	float temp = transform.rotation.x;
+	std::cout << transform.rotation.x << std::endl;
+	std::cout << transform.rotation.y << std::endl;
+	std::cout << transform.rotation.z << std::endl;
+	RollPitchYaw.z = transform.rotation.z;
+	//RollPitchYaw = transform.rotation;
 }
 
 /*void Camera::Translate(Camera_Movement direction, float deltaTime) {

@@ -121,7 +121,7 @@ public:
 	float specularIntensity = 0.5f;
 	float reflectivity = 0.5f;
 
-	float IOR = 1.f / 1.52f;
+	float eta = 1.f / 1.33f;
 
 
 	void Bind() override;

@@ -117,7 +117,7 @@ void RefractMaterial::Update() {
 	Bind();
 	//shader.setUniform1i("u_Tex", 0);
 	shader.setUniform1i("u_SkyboxTex", 0);
-	shader.setUniform1f("u_IOR", IOR);
+	shader.setUniform1f("u_Eta", eta);
 	//shader.setUniform3f("u_LightPos", light.getPosition());
 	//shader.setUniform3f("u_SpecularColor", light.getColor());
 	shader.setUniformMat4f("u_ViewMatrix", cam.GetViewMatrix(), false);
